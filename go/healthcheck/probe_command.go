@@ -15,6 +15,8 @@ func runProbe(args []string) int {
 	secret := flags.String("secret", os.Getenv("CLASH_SECRET"), "Clash API bearer token")
 	timeout := flags.Duration("timeout", 5*time.Second, "probe timeout")
 	realData := flags.Bool("real-data", envBool("PROBE_REAL_DATA", false), "also test the current outbound with a real download")
+	probeURL := flags.String("url", envOr("LIVENESS_URL", "https://speed.cloudflare.com/__down?bytes=100000"), "real-data URL")
+	expectedBytes := flags.Int64("bytes", envInt64("LIVENESS_BYTES", 100000), "expected response size; -1 accepts any size")
 	if err := flags.Parse(args); err != nil {
 		return 2
 	}
@@ -44,6 +46,8 @@ func runProbe(args []string) int {
 	d.api = *api
 	d.secret = *secret
 	d.probeTimeout = *timeout
+	d.livenessURL = *probeURL
+	d.livenessBytes = *expectedBytes
 	if err := d.loadPortMap(); err != nil {
 		fmt.Fprintln(os.Stderr, "probe: load probe ports:", err)
 		return 1

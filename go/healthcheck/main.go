@@ -338,7 +338,7 @@ func (d *Daemon) probeViaPort(ctx context.Context, port int) (time.Duration, err
 	if err != nil {
 		return 0, err
 	}
-	if n != d.livenessBytes {
+	if d.livenessBytes >= 0 && n != d.livenessBytes {
 		return 0, fmt.Errorf("partial: got %d, want %d", n, d.livenessBytes)
 	}
 	if err := d.probeTelegram(ctx, proxyURL); err != nil {
