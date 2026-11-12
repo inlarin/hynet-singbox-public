@@ -434,7 +434,12 @@ func buildEmptyConfig(secret, routerIP string) jsonObject {
 		"type": "tun", "tag": "tun-in", "interface_name": tunName,
 		"address": []any{tunAddress}, "mtu": tunMTU,
 		"auto_route": true, "strict_route": true,
+		"udp_nat_max": envInt("UDP_NAT_MAX", 0),
 	}
+	if envBool("SINGBOX_TUN_MULTI_QUEUE", false) {
+		tun["multi_queue"] = true
+	}
+	interruptConnections := envBool("INTERRUPT_EXIST_CONNECTIONS", false)
 	if stack := strings.TrimSpace(os.Getenv("SINGBOX_TUN_STACK")); stack != "" && stack != "none" && stack != "off" {
 		tun["stack"] = stack
 	} else if _, present := os.LookupEnv("SINGBOX_TUN_STACK"); !present {
@@ -444,20 +449,30 @@ func buildEmptyConfig(secret, routerIP string) jsonObject {
 	if clashAddress == "" {
 		clashAddress = routerIP + ":9090"
 	}
-	return jsonObject{
-		"log": jsonObject{"level": "warn", "timestamp": true, "output": "/tmp/sing-box.log"},
-		"dns": jsonObject{
-			"servers": []any{
-				jsonObject{"type": "udp", "tag": "remote", "server": "1.1.1.1", "detour": "select"},
-				jsonObject{"type": "udp", "tag": "local", "server": routerIP},
-				jsonObject{"type": "udp", "tag": "nodes", "server": envOr("SINGBOX_NODE_RESOLVER", "77.88.8.8")},
-			},
-			"rules": []any{
-				jsonObject{"clash_mode": "direct", "action": "route", "server": "local"},
-				jsonObject{"clash_mode": "global", "action": "route", "server": "remote"},
-			},
-			"final": "remote", "strategy": "ipv4_only",
+	dnsConfig := jsonObject{
+		"servers": []any{
+			jsonObject{"type": "udp", "tag": "remote", "server": "1.1.1.1", "detour": "select"},
+			jsonObject{"type": "udp", "tag": "local", "server": routerIP},
+			jsonObject{"type": "udp", "tag": "nodes", "server": envOr("SINGBOX_NODE_RESOLVER", "77.88.8.8")},
 		},
+		"rules": []any{
+			jsonObject{"clash_mode": "direct", "action": "route", "server": "local"},
+			jsonObject{"clash_mode": "global", "action": "route", "server": "remote"},
+		},
+		"final": "remote", "strategy": "ipv4_only",
+	}
+	if optimistic := os.Getenv("SINGBOX_DNS_OPTIMISTIC"); optimistic != "" {
+		dnsConfig["optimistic"] = jsonObject{"enabled": true, "timeout": optimistic}
+	}
+	if timeout := os.Getenv("SINGBOX_DNS_TIMEOUT"); timeout != "" {
+		dnsConfig["timeout"] = timeout
+	}
+	if capacity := envInt("SINGBOX_DNS_CACHE_CAPACITY", 0); capacity >= 1024 {
+		dnsConfig["cache_capacity"] = capacity
+	}
+	result := jsonObject{
+		"log": jsonObject{"level": envOr("LOG_LEVEL", "warn"), "timestamp": true, "output": "/tmp/sing-box.log"},
+		"dns": dnsConfig,
 		"inbounds": []any{
 			tun,
 			jsonObject{"type": "http", "tag": "refresh-direct", "listen": "127.0.0.1", "listen_port": 7899},
@@ -465,12 +480,12 @@ func buildEmptyConfig(secret, routerIP string) jsonObject {
 		"outbounds": []any{
 			jsonObject{
 				"type": "selector", "tag": "select", "outbounds": []any{"urltest-all"},
-				"default": "urltest-all", "interrupt_exist_connections": true,
+				"default": "urltest-all", "interrupt_exist_connections": interruptConnections,
 			},
 			jsonObject{
 				"type": "urltest", "tag": "urltest-all", "outbounds": []any{},
 				"url": "https://www.gstatic.com/generate_204", "interval": "3m", "tolerance": 50,
-				"interrupt_exist_connections": true,
+				"interrupt_exist_connections": interruptConnections,
 			},
 			jsonObject{"type": "direct", "tag": "direct"},
 		},
@@ -483,13 +498,35 @@ func buildEmptyConfig(secret, routerIP string) jsonObject {
 			},
 			"final": "select", "auto_detect_interface": true, "default_domain_resolver": "nodes",
 		},
-		"experimental": jsonObject{
-			"cache_file": jsonObject{"enabled": true, "path": "/tmp/sing-box-cache.db"},
-			"clash_api": jsonObject{
-				"external_controller": clashAddress, "secret": secret, "default_mode": "rule",
-			},
+	}
+	cacheFile := jsonObject{"enabled": true, "path": "/tmp/sing-box-cache.db"}
+	if bufferSize := os.Getenv("SINGBOX_CACHE_BUFFER_SIZE"); bufferSize != "" {
+		cacheFile["buffer_size"] = bufferSize
+	}
+	result["experimental"] = jsonObject{
+		"cache_file": cacheFile,
+		"clash_api": jsonObject{
+			"external_controller": clashAddress, "secret": secret, "default_mode": "rule",
 		},
 	}
+	if envBool("SINGBOX_API_ENABLED", false) {
+		result["outbounds"] = append(arrayValue(result["outbounds"]), jsonObject{
+			"type": "selector", "tag": "direct-wan", "outbounds": []any{"direct"},
+		})
+		result["services"] = []any{jsonObject{
+			"type":        "api",
+			"listen":      envOr("SINGBOX_API_LISTEN", "172.20.0.2"),
+			"listen_port": envInt("SINGBOX_API_PORT", 9091),
+			"secret":      secret,
+			"dashboard": jsonObject{
+				"enabled":         true,
+				"path":            envOr("SINGBOX_DASHBOARD_PATH", "/tmp/dashboard"),
+				"update_interval": envOr("SINGBOX_DASHBOARD_UPDATE_INTERVAL", "7d"),
+				"http_client":     jsonObject{"detour": "direct-wan"},
+			},
+		}}
+	}
+	return result
 }
 
 func readCountryCache(path string) map[string]string {

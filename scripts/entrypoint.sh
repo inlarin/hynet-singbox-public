@@ -18,7 +18,9 @@ if [ -z "${SUBSCRIPTION_1:-}${SUBSCRIPTION_2:-}${SUBSCRIPTION_3:-}${SUBSCRIPTION
     exit 3
 fi
 
-if mount -t tmpfs -o "size=$TMPFS_SIZE,mode=1777" tmpfs /tmp 2>/dev/null; then
+if mountpoint -q /tmp; then
+    log "tmpfs already mounted on /tmp"
+elif mount -t tmpfs -o "size=$TMPFS_SIZE,mode=1777" tmpfs /tmp 2>/dev/null; then
     log "tmpfs mounted on /tmp ($TMPFS_SIZE)"
 else
     log "WARN: tmpfs mount failed, /tmp falls through to container overlay"

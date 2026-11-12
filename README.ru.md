@@ -40,6 +40,19 @@ Runtime полностью на Go: Python, curl, jq, gcompat и полный ip
 | `SINGBOX_TUN_NAME` | `opkgtun0` | Имя TUN-интерфейса в netns контейнера. |
 | `TUN_ADDR` | `172.19.0.1` | IPv4-адрес TUN; в конфиг записывается `/30`. |
 | `TUN_MTU` | `1420` | MTU TUN. |
+| `SINGBOX_TUN_MULTI_QUEUE` | `0` | `1` включает multi-queue TUN на стеке sing-tun 1.15 для масштабирования по ядрам; сначала canary. |
+| `INTERRUPT_EXIST_CONNECTIONS` | `0` | `0` сохраняет установленные inbound-соединения при смене сервера; `1` разрывает их. |
+| `UDP_NAT_MAX` | `0` | Максимум UDP NAT-сессий; `0` — авто. На слабых платах используй `4096`. |
+| `LOG_LEVEL` | `warn` | Уровень логов sing-box; `info`/`debug` только временно. |
+| `SINGBOX_DNS_OPTIMISTIC` | *(пусто)* | TTL optimistic DNS cache, например `10m`. Пусто — выключен. |
+| `SINGBOX_DNS_TIMEOUT` | *(пусто)* | Необязательный таймаут DNS-запроса, например `5s`. |
+| `SINGBOX_DNS_CACHE_CAPACITY` | `0` | Ёмкость DNS LRU; минимум 1024, для малых плат 2048. |
+| `SINGBOX_CACHE_BUFFER_SIZE` | *(пусто)* | Буфер записи cache-file, например `256KB` для малых плат. |
+| `SINGBOX_API_ENABLED` | `0` | `1` включает нативную sing-box API и dashboard. Только с секретом и ограничением firewall. |
+| `SINGBOX_API_LISTEN` / `SINGBOX_API_PORT` | `172.20.0.2` / `9091` | Адрес и порт нативной API. |
+| `SINGBOX_DASHBOARD_PATH` | `/tmp/dashboard` | Каталог загрузки dashboard на tmpfs. |
+| `SINGBOX_DASHBOARD_UPDATE_INTERVAL` | `7d` | Интервал обновления dashboard. |
+| `PROBE_REAL_DATA` | `0` | `1` добавляет `healthcheck probe` проверку текущего выхода реальной загрузкой. |
 | `SINGBOX_TUN_STACK` | `none` | Опустить `stack` и использовать собственный стек sing-tun 1.15. `system` — legacy kernel-вариант; gVisor-теги намеренно не собираются. |
 | `CLASH_ADDR` | `172.20.0.2:9090` | listen-адрес Clash API только на изолированном veth, не `0.0.0.0`. |
 | `CLASH_SECRET` | *(обязательная)* | Bearer-токен Clash API. |
@@ -154,15 +167,35 @@ RouterOS ждёт физического подтверждения — нажм
     interface=veth-hynet envlist=hynet \
     root-dir=<storage>/containers/hynet \
     dns=172.20.0.1 \
-    memory-high=500MiB \
+    tmpfs=64M@/tmp shm-size=16MiB \
+    memory-high=500MiB memory-max=600MiB \
+    restart-policy=on-failure restart-max-count=5 restart-interval=5m \
+    healthcheck-cmd="/usr/local/bin/healthcheck probe" \
+    healthcheck-interval=30s healthcheck-timeout=10s healthcheck-start-period=30s \
     start-on-boot=yes logging=yes
 ```
 
 > `/dev/net/tun` пробрасывается в контейнер автоматически — отдельный mount не нужен (устройство входит в дефолтный набор `/dev/` по [документации MikroTik](https://help.mikrotik.com/docs/spaces/ROS/pages/84901929/Container)).
 >
-> **Никакого host-side bind-маунта не нужно.** Контейнер сам монтирует `tmpfs` на свой `/tmp` из `entrypoint.sh` на старте (64 МБ, `mode=1777`), и весь runtime state (подписка, сгенерированный конфиг, country cache, рейтинги healthcheck'а, sing-box log) живёт в RAM. NAND wear на runtime: 0 записей (контейнерный tmpfs перехватывает всё до того как overlay-слой хоста увидит запись). Если хост не даёт контейнеру `CAP_SYS_ADMIN` — tmpfs-маунт молча фейлится, `/tmp` падает на overlay (entrypoint логирует `WARN`-строку) — функционально работает, просто пишет на NAND.
+> **Никакого host-side bind-маунта не нужно.** RouterOS монтирует `tmpfs` через свойство контейнера `tmpfs=64M@/tmp`, и весь runtime state (подписка, сгенерированный конфиг, country cache, рейтинги healthcheck'а, sing-box log) живёт в RAM. NAND wear на runtime: 0 записей. Entrypoint видит существующий mount и не повторяет его; на других container engines остаётся fallback-попытка с `WARN` при неудаче.
 >
-> **`memory-high=500MiB` обязателен, не опционален.** TUN-inbound у sing-box с `auto_route=true` ловит каждое connection в netns контейнера. Под живой LAN-нагрузкой (один браузер откроет YouTube + несколько приложений одновременно) per-connection state может разрастись если что-то в конфиге регрессирует (мы видели как одна misconfiguration сожрала 1 ГБ RAM за секунды и перезагрузила роутер). С лимитом ядро убивает контейнер раньше чем оно убьёт хост. Безопасное значение: половина RAM роутера. На роутерах с 256 МБ — `memory-high=120MiB`.
+> **Лимиты памяти обязательны на проде.** TUN-inbound sing-box с `auto_route=true` ловит каждое connection в netns контейнера. Под нагрузкой per-connection state может разрастись. `memory-high` начинает тормозить процессы под давлением, `memory-max` останавливает контейнер до угрозы хосту. Если заданы лимиты и глобально, и на контейнере, побеждает меньший. Для малых плат используй профили ниже, swap на внутренней flash не включай.
+
+#### Рекомендуемые профили
+
+| Параметр | RB4011 / RB5009 | L009 | hAP ax lite, только canary |
+|---|---:|---:|---:|
+| `memory-high` | 500MiB | 220–250MiB | 100–120MiB |
+| `memory-max` | 600MiB | 280–300MiB | 128–140MiB |
+| `tmpfs` | 64M | 32M | 16M |
+| `shm-size` | 16–32MiB | 16MiB | 8–16MiB |
+| `GOMEMLIMIT` | 96MiB | 64–96MiB | 64MiB |
+| `PROBE_CONCURRENCY` | 4 | 1–2 | 1 |
+| `multi_queue` | canary | canary | сначала выключен |
+| Нативная dashboard | опционально | выключена | выключена |
+| Swap | выключен | выключен | выключен |
+
+Используй `restart-policy=on-failure`, `restart-max-count=5`, `restart-interval=5m` и нативную `healthcheck probe`. `stop-on-unhealthy` пока не включай: временный WAN-сбой не должен без нужды останавливать контейнер. Topic `container` направляй в memory или remote-syslog, а не в disk action.
 
 #### Совместимость с версиями RouterOS
 
@@ -343,6 +376,7 @@ curl -H "Authorization: Bearer $CLASH_SECRET" \
 ```bash
 docker run --rm -it \
     --cap-add=NET_ADMIN --device /dev/net/tun \
+    --tmpfs /tmp:rw,size=64M \
     -e SUBSCRIPTION_1='https://your-provider/sub' \
     -e CLASH_SECRET='replace-with-random' \
     -e CLASH_ADDR=0.0.0.0:9090 \
