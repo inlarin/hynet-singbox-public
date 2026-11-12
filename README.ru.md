@@ -11,10 +11,12 @@
 | Компонент | Назначение |
 |---|---|
 | [`sing-box`](https://github.com/SagerNet/sing-box) 1.15.0-alpha.13 (canary, slim, собирается из исходников в Dockerfile, `ARG SINGBOX_VERSION`) | Прокси-runtime, владеет TUN. Build tags: `with_quic,with_grpc,with_utls,with_clash_api,badlinkname,tfogo_checklinkname0`. Go 1.26.10, `CGO_ENABLED=0`, upstream release LDFLAGS + версия и strip-флаги. |
-| `sub_to_singbox.py` + `merge-subscriptions.py` | Основная и независимые дополнительные подписки с исходными URL, UA и HWID. При сбое провайдера его последние рабочие узлы сохраняются. Один TUN, один `select`, country-группы и отдельные probe-порты. |
+| `healthcheck render` (Go) | Разбор Base64 URI, Clash YAML, Xray JSON, SIP008 и sing-box outbounds от пяти независимых провайдеров. URL, UA и необязательный HWID сохраняются для каждого; при сбое остаются последние рабочие узлы. Один TUN, один `select` и отдельные probe-порты. |
 | `entrypoint.sh` | Initial fetch+render, фоновое ежедневное обновление, foreground respawn-loop sing-box, ежечасное обслуживание логов и состояния. |
-| `sub-refresh.sh` | curl (dual-mirror, direct-WAN proxy) → convert/merge → `sing-box check` → atomic swap → SIGTERM. Восстанавливает `select.now`, откатывает конфиг если новый не запустился. |
+| `healthcheck refresh` (вызывается из `sub-refresh.sh`) | Dual-mirror fetch через direct WAN → convert/merge → `sing-box check` → atomic swap → SIGTERM. Восстанавливает `select.now`, откатывает конфиг если новый не запустился. |
 | `healthcheck` (Go бинарь) | Демон real-data проб. Периодически качает 100 KB через каждый outbound пула, ранжирует по latency, авто-пинит самый быстрый живой, ротирует на падении. Ловит servers'ы которые проходят TLS-handshake но дропают данные — sing-box HEAD-probe такие пропускает. |
+
+Runtime полностью на Go: Python, curl, jq, gcompat и полный iproute2 удалены. UPX-сжатие включено по умолчанию (`ENABLE_UPX=1`).
 
 ## Теги
 
@@ -33,6 +35,8 @@
 | Переменная | По умолчанию | Назначение |
 |---|---|---|
 | `REFRESH_INTERVAL` | `86400` | Секунды между авто-рефрешами подписки. |
+| `TMPFS_SIZE` | `64M` | Размер `/tmp` в RAM; на слабых платах можно задать `16M` или `32M`. |
+| `GOMEMLIMIT` | `96MiB` | Мягкий лимит Go heap на процесс healthcheck и sing-box; уменьшать только после замеров реального трафика. |
 | `SINGBOX_TUN_NAME` | `opkgtun0` | Имя TUN-интерфейса в netns контейнера. |
 | `TUN_ADDR` | `172.19.0.1` | IPv4-адрес TUN; в конфиг записывается `/30`. |
 | `TUN_MTU` | `1420` | MTU TUN. |
@@ -356,12 +360,14 @@ cd hynet-singbox
 docker buildx build --platform linux/arm/v7 --provenance=false --sbom=false --load -t hynet-singbox:armv7 .
 ```
 
+UPX включён по умолчанию. Для несжатой отладочной сборки добавь `--build-arg ENABLE_UPX=0`.
+
 ## Расход ресурсов на RB4011
 
 | Ресурс | Idle | Active (один TCP-стрим) |
 |---|---|---|
 | RAM (контейнер) | ~50 MB | ~90–140 MB |
-| Образ на диске | rootfs ≤70 MB (~22 MB compressed pull после slim-сборки) | — |
+| Образ на диске | rootfs ~22.6 MB (~19.5 MB сжатый Docker archive) | — |
 | NAND-записей в день в runtime | **0** (всё state на tmpfs внутри контейнера) | — |
 
 ## Эксплуатационные заметки — рефреш, деплой, чтение здоровья
@@ -372,7 +378,7 @@ docker buildx build --platform linux/arm/v7 --provenance=false --sbom=false --lo
 
 Каждый `sub1…sub5` обновляется независимо с собственными URL, UA и необязательным HWID. Для `hynet-connect.com`/`hynet.cloud` автоматически пробуется зеркало. Конвертер отклоняет HTML-заглушки, при сбое одного провайдера сохраняются его узлы из текущего рабочего конфига, остальные пулы обновляются. Ручных fallback-ссылок нет.
 
-До старта sing-box fetch идёт через обычный default route контейнера. При активном TUN curl использует localhost HTTP-inbound `refresh-direct` на `127.0.0.1:7899`, статически направленный в `direct` outbound. `route.auto_detect_interface=true` привязывает исходящие соединения к veth и исключает кольцо через TUN. Поэтому обновление не зависит от живого VPN-выхода и не требует host mount.
+До старта sing-box fetch идёт через обычный default route контейнера. При активном TUN Go HTTP client использует localhost HTTP-inbound `refresh-direct` на `127.0.0.1:7899`, статически направленный в `direct` outbound. `route.auto_detect_interface=true` привязывает исходящие соединения к veth и исключает кольцо через TUN. Поэтому обновление не зависит от живого VPN-выхода и не требует host mount.
 
 Контролировать нужно `/tmp/config.json`, `/tmp/sub-refresh.log`, `df /tmp` и память процессов, а не только `select.now`. Maintenance-loop раз в час оставляет последние 500 строк в `sing-box.log`, `healthcheck.log` и `sub-refresh.log`, выводит возраст конфига, tmpfs и RSS.
 
@@ -399,18 +405,17 @@ docker buildx build --platform linux/arm/v7 --provenance=false --sbom=false --lo
 **DPI конкретной линии, а не вина сервера или sing-box** — селектор просто никогда не выбирает
 мёртвые grpc-ноды. Не перезапускай и не переконфигурируй из-за них.
 
-### Go-конвертер подписок — подготовительный, не активен
+### Go-only генерация и обновление
 
-В бинарник healthcheck добавлен opt-in подрежим `render` для будущего образа без Python. Он разбирает Base64 URI, Clash YAML, Xray JSON, SIP008 и готовые sing-box outbounds; поддерживает VLESS, VMess, Trojan, Shadowsocks, Hysteria2 и TUIC; реализует независимые провайдеры, зеркала hynet, необязательный HWID, sticky SNI, keep-last-known-good для каждого провайдера, карты стран и probe-портов.
+`healthcheck render` только записывает кандидатную конфигурацию. `healthcheck refresh` дополнительно проверяет её через `sing-box check`, пропускает неизменённый пул, сохраняет прежний конфиг, атомарно устанавливает кандидатный, перезапускает работающий sing-box, ждёт Clash API, восстанавливает `select.now`, а при неудачном запуске возвращает прежний конфиг.
 
 ```sh
-/usr/local/bin/healthcheck render \
+/usr/local/bin/healthcheck refresh \
     --subscriptions-dir /tmp/sing-box/subscriptions.d \
-    --active-config /tmp/config.json \
-    --out /tmp/config.go.json
+    --active-config /tmp/config.json
 ```
 
-Команда только записывает кандидатную конфигурацию. Entrypoint и `sub-refresh.sh` продолжают использовать Python-пайплайн как рабочий fallback; `render` не перезапускает sing-box и не меняет `select.now`. Локальное дифференциальное сравнение с Python на пяти провайдерах и на отказе одного провайдера показало совпадение JSON, карт стран и probe-портов; затем обе конфигурации прошли `sing-box check`. На роутеры ничего не устанавливалось.
+Старый Python-пайплайн сверен с Go на локальных differential-фикстурах: пять провайдеров и сохранение узлов при отказе одного дали совпадающие JSON, карты стран и probe-порты; затем конфигурации прошли `sing-box check`. В образе остаётся только Go-путь, Python fallback удалён.
 
 ### Деплой правки скрипта в работающий контейнер
 
