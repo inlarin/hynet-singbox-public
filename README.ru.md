@@ -399,6 +399,19 @@ docker buildx build --platform linux/arm/v7 --provenance=false --sbom=false --lo
 **DPI конкретной линии, а не вина сервера или sing-box** — селектор просто никогда не выбирает
 мёртвые grpc-ноды. Не перезапускай и не переконфигурируй из-за них.
 
+### Go-конвертер подписок — подготовительный, не активен
+
+В бинарник healthcheck добавлен opt-in подрежим `render` для будущего образа без Python. Он разбирает Base64 URI, Clash YAML, Xray JSON, SIP008 и готовые sing-box outbounds; поддерживает VLESS, VMess, Trojan, Shadowsocks, Hysteria2 и TUIC; реализует независимые провайдеры, зеркала hynet, необязательный HWID, sticky SNI, keep-last-known-good для каждого провайдера, карты стран и probe-портов.
+
+```sh
+/usr/local/bin/healthcheck render \
+    --subscriptions-dir /tmp/sing-box/subscriptions.d \
+    --active-config /tmp/config.json \
+    --out /tmp/config.go.json
+```
+
+Команда только записывает кандидатную конфигурацию. Entrypoint и `sub-refresh.sh` продолжают использовать Python-пайплайн как рабочий fallback; `render` не перезапускает sing-box и не меняет `select.now`. Локальное дифференциальное сравнение с Python на пяти провайдерах и на отказе одного провайдера показало совпадение JSON, карт стран и probe-портов; затем обе конфигурации прошли `sing-box check`. На роутеры ничего не устанавливалось.
+
 ### Деплой правки скрипта в работающий контейнер
 
 Правки `/usr/local/bin/*.sh` в живом контейнере переживают рестарт контейнера, но

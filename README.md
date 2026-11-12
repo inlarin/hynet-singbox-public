@@ -399,6 +399,19 @@ same servers' `:8444` vision / vmess / trojan / ss work, and RU grpc works. This
 **line-specific DPI, not a server or sing-box fault** — the selector simply never picks the
 dead grpc nodes. Don't restart or reconfigure for them.
 
+### Go subscription renderer — preparatory, not active
+
+The healthcheck binary also contains an opt-in `render` subcommand for the planned Python-free image. It parses Base64 URI lists, Clash YAML, Xray JSON, SIP008 and existing sing-box outbounds; supports VLESS, VMess, Trojan, Shadowsocks, Hysteria2 and TUIC; and implements independent providers, hynet mirrors, optional HWID, sticky SNI, per-provider keep-last-known-good, country maps and probe-port maps.
+
+```sh
+/usr/local/bin/healthcheck render \
+    --subscriptions-dir /tmp/sing-box/subscriptions.d \
+    --active-config /tmp/config.json \
+    --out /tmp/config.go.json
+```
+
+This command only writes a candidate configuration. The entrypoint and `sub-refresh.sh` still use the Python pipeline as the production fallback; `render` does not restart sing-box or change `select.now`. Local differential checks against the Python pipeline covered five providers and a failed-provider carry-over, with matching JSON, country maps and probe maps, followed by `sing-box check`. No router deployment has been performed.
+
 ### Deploying a script edit to a running container
 
 Edits to `/usr/local/bin/*.sh` in a running container persist across container restart but
