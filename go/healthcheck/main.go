@@ -36,27 +36,29 @@ import (
 // ── flags / env ─────────────────────────────────────────────────────────────
 
 var (
-	flagClashAPI         = flag.String("clash-api", envOr("CLASH_API", "http://127.0.0.1:9090"), "Clash API endpoint")
-	flagClashSecret      = flag.String("clash-secret", envOr("CLASH_SECRET", ""), "Clash API bearer token")
-	flagSelectTag        = flag.String("select-tag", envOr("SELECT_TAG", "select"), "name of the top-level selector group")
-	flagLivenessURL      = flag.String("liveness-url", envOr("LIVENESS_URL", "https://speed.cloudflare.com/__down?bytes=100000"), "real-data probe URL")
-	flagLivenessBytes    = flag.Int64("liveness-bytes", envInt64("LIVENESS_BYTES", 100000), "expected response size; partial = fail")
-	flagLivenessInterval = flag.Duration("liveness-interval", envDur("LIVENESS_INTERVAL", 30*time.Second), "interval between liveness probes")
-	flagRankInterval     = flag.Duration("rank-interval", envDur("RANK_INTERVAL", 10*time.Minute), "interval between full ranking sweeps")
-	flagRankStale        = flag.Duration("rank-stale-after", envDur("RANK_STALE_AFTER", 25*time.Minute), "discard ranking entries older than this interval")
-	flagProbeTimeout     = flag.Duration("probe-timeout", envDur("PROBE_TIMEOUT", 12*time.Second), "per-probe timeout")
-	flagProbeConcurrency = flag.Int("probe-concurrency", envInt("PROBE_CONCURRENCY", 4), "maximum simultaneous outbound probes")
-	flagFailThreshold    = flag.Int("fail-threshold", envInt("FAIL_THRESHOLD", 2), "consecutive failures before rotating select.now")
-	flagRotsBeforeForce  = flag.Int("rotations-before-force-sweep", envInt("ROTATIONS_BEFORE_FORCE_SWEEP", 3), "consecutive rotations w/o success → force sweep")
-	flagHysteresisPct    = flag.Int("hysteresis-pct", envInt("HYSTERESIS_PCT", 15), "%% better required before pinBest switches host")
-	flagMinSwitch        = flag.Duration("min-switch-interval", envDur("MIN_SWITCH_INTERVAL", 15*time.Minute), "minimum dwell time before switching for lower latency")
-	flagImproveConfirm   = flag.Int("improve-confirmations", envInt("IMPROVE_CONFIRMATIONS", 2), "consecutive sweeps required before switching for lower latency")
-	flagAutoPin          = flag.Bool("auto-pin", envBool("AUTO_PIN", true), "allow daemon to change select.now")
-	flagExcludeCC        = flag.String("exclude-probe-cc", envOr("EXCLUDE_AUTO_CC", "RU"), "comma-separated country codes excluded from probe pool (still pickable manually)")
-	flagExcludeProto     = flag.String("exclude-auto-proto", envOr("SINGBOX_EXCLUDE_AUTO_PROTO", "shadowsocks,vmess"), "comma-separated protocols excluded from automatic selection")
-	flagStateDir         = flag.String("state-dir", envOr("STATE_DIR", "/tmp/healthcheck"), "tmpfs state dir for ranking + counters")
-	flagProbePortsPath   = flag.String("probe-ports", envOr("PROBE_PORTS", "/tmp/probe_ports.json"), "tag→probe-port JSON map written by sub2singbox")
-	flagProbeCountries   = flag.String("probe-countries", envOr("PROBE_COUNTRIES", "/tmp/probe_countries.json"), "tag→country-code JSON map written by sub-refresh")
+	flagClashAPI           = flag.String("clash-api", envOr("CLASH_API", "http://127.0.0.1:9090"), "Clash API endpoint")
+	flagClashSecret        = flag.String("clash-secret", envOr("CLASH_SECRET", ""), "Clash API bearer token")
+	flagSelectTag          = flag.String("select-tag", envOr("SELECT_TAG", "select"), "name of the top-level selector group")
+	flagLivenessURL        = flag.String("liveness-url", envOr("LIVENESS_URL", "https://speed.cloudflare.com/__down?bytes=100000"), "real-data probe URL")
+	flagLivenessBytes      = flag.Int64("liveness-bytes", envInt64("LIVENESS_BYTES", 100000), "expected response size; partial = fail")
+	flagLivenessInterval   = flag.Duration("liveness-interval", envDur("LIVENESS_INTERVAL", 30*time.Second), "interval between liveness probes")
+	flagRankInterval       = flag.Duration("rank-interval", envDur("RANK_INTERVAL", 10*time.Minute), "interval between full ranking sweeps")
+	flagRankStale          = flag.Duration("rank-stale-after", envDur("RANK_STALE_AFTER", 25*time.Minute), "discard ranking entries older than this interval")
+	flagProbeTimeout       = flag.Duration("probe-timeout", envDur("PROBE_TIMEOUT", 12*time.Second), "per-probe timeout")
+	flagProbeConcurrency   = flag.Int("probe-concurrency", envInt("PROBE_CONCURRENCY", 4), "maximum simultaneous outbound probes")
+	flagFailThreshold      = flag.Int("fail-threshold", envInt("FAIL_THRESHOLD", 2), "consecutive failures before rotating select.now")
+	flagRotsBeforeForce    = flag.Int("rotations-before-force-sweep", envInt("ROTATIONS_BEFORE_FORCE_SWEEP", 3), "consecutive rotations w/o success → force sweep")
+	flagHysteresisPct      = flag.Int("hysteresis-pct", envInt("HYSTERESIS_PCT", 15), "%% better required before pinBest switches host")
+	flagSevereImprovePct   = flag.Int("severe-improve-pct", envInt("SEVERE_IMPROVE_PCT", 50), "%% improvement that bypasses dwell and repeated confirmation")
+	flagFailoverCandidates = flag.Int("failover-candidates", envInt("FAILOVER_CANDIDATES", 5), "ranked candidates freshly probed during failure rotation")
+	flagMinSwitch          = flag.Duration("min-switch-interval", envDur("MIN_SWITCH_INTERVAL", 15*time.Minute), "minimum dwell time before switching for lower latency")
+	flagImproveConfirm     = flag.Int("improve-confirmations", envInt("IMPROVE_CONFIRMATIONS", 2), "consecutive sweeps required before switching for lower latency")
+	flagAutoPin            = flag.Bool("auto-pin", envBool("AUTO_PIN", true), "allow daemon to change select.now")
+	flagExcludeCC          = flag.String("exclude-probe-cc", envOr("EXCLUDE_AUTO_CC", "RU"), "comma-separated country codes excluded from probe pool (still pickable manually)")
+	flagExcludeProto       = flag.String("exclude-auto-proto", envOr("SINGBOX_EXCLUDE_AUTO_PROTO", "shadowsocks,vmess"), "comma-separated protocols excluded from automatic selection")
+	flagStateDir           = flag.String("state-dir", envOr("STATE_DIR", "/tmp/healthcheck"), "tmpfs state dir for ranking + counters")
+	flagProbePortsPath     = flag.String("probe-ports", envOr("PROBE_PORTS", "/tmp/probe_ports.json"), "tag→probe-port JSON map written by sub2singbox")
+	flagProbeCountries     = flag.String("probe-countries", envOr("PROBE_COUNTRIES", "/tmp/probe_countries.json"), "tag→country-code JSON map written by sub-refresh")
 
 	// Telegram selector (tg-select) management — kept entirely separate from
 	// the main `select` pool. No-op when tg-select is absent (HY2_URI unset).
@@ -131,26 +133,28 @@ type RankEntry struct {
 }
 
 type Daemon struct {
-	api             string
-	secret          string
-	selectTag       string
-	excluded        map[string]bool
-	livenessURL     string
-	livenessBytes   int64
-	probeTimeout    time.Duration
-	failThreshold   int
-	rotsBeforeForce int
-	hysteresisPct   int
-	minSwitch       time.Duration
-	improveConfirm  int
-	autoPin         bool
-	stateDir        string
-	probePortsPath  string
-	probeCountries  string
-	lastSwitch      time.Time
-	candidate       string
-	candidateN      int
-	firstSweep      bool
+	api                string
+	secret             string
+	selectTag          string
+	excluded           map[string]bool
+	livenessURL        string
+	livenessBytes      int64
+	probeTimeout       time.Duration
+	failThreshold      int
+	rotsBeforeForce    int
+	hysteresisPct      int
+	severeImprovePct   int
+	failoverCandidates int
+	minSwitch          time.Duration
+	improveConfirm     int
+	autoPin            bool
+	stateDir           string
+	probePortsPath     string
+	probeCountries     string
+	lastSwitch         time.Time
+	candidate          string
+	candidateN         int
+	firstSweep         bool
 
 	tgSelectTag   string
 	tgHysteria    bool
@@ -179,33 +183,35 @@ func newDaemon() *Daemon {
 		}
 	}
 	return &Daemon{
-		api:             strings.TrimRight(*flagClashAPI, "/"),
-		secret:          *flagClashSecret,
-		selectTag:       *flagSelectTag,
-		excluded:        excl,
-		livenessURL:     *flagLivenessURL,
-		livenessBytes:   *flagLivenessBytes,
-		probeTimeout:    *flagProbeTimeout,
-		failThreshold:   *flagFailThreshold,
-		rotsBeforeForce: *flagRotsBeforeForce,
-		hysteresisPct:   *flagHysteresisPct,
-		minSwitch:       *flagMinSwitch,
-		improveConfirm:  *flagImproveConfirm,
-		autoPin:         *flagAutoPin,
-		stateDir:        *flagStateDir,
-		probePortsPath:  *flagProbePortsPath,
-		probeCountries:  *flagProbeCountries,
-		firstSweep:      true,
-		tgSelectTag:     *flagTGSelectTag,
-		tgHysteria:      tgHysteriaOn(*flagTGHysteria),
-		tgInterval:      *flagTGInterval,
-		tgFailThresh:    *flagTGFailThresh,
-		tgLiveURL:       *flagTGLiveURL,
-		tgFailoverTag:   *flagTGFailover,
-		rankings:        map[string]RankEntry{},
-		portMap:         map[string]int{},
-		countryMap:      map[string]string{},
-		cli:             &http.Client{Timeout: 0}, // per-call timeouts via context
+		api:                strings.TrimRight(*flagClashAPI, "/"),
+		secret:             *flagClashSecret,
+		selectTag:          *flagSelectTag,
+		excluded:           excl,
+		livenessURL:        *flagLivenessURL,
+		livenessBytes:      *flagLivenessBytes,
+		probeTimeout:       *flagProbeTimeout,
+		failThreshold:      *flagFailThreshold,
+		rotsBeforeForce:    *flagRotsBeforeForce,
+		hysteresisPct:      *flagHysteresisPct,
+		severeImprovePct:   *flagSevereImprovePct,
+		failoverCandidates: *flagFailoverCandidates,
+		minSwitch:          *flagMinSwitch,
+		improveConfirm:     *flagImproveConfirm,
+		autoPin:            *flagAutoPin,
+		stateDir:           *flagStateDir,
+		probePortsPath:     *flagProbePortsPath,
+		probeCountries:     *flagProbeCountries,
+		firstSweep:         true,
+		tgSelectTag:        *flagTGSelectTag,
+		tgHysteria:         tgHysteriaOn(*flagTGHysteria),
+		tgInterval:         *flagTGInterval,
+		tgFailThresh:       *flagTGFailThresh,
+		tgLiveURL:          *flagTGLiveURL,
+		tgFailoverTag:      *flagTGFailover,
+		rankings:           map[string]RankEntry{},
+		portMap:            map[string]int{},
+		countryMap:         map[string]string{},
+		cli:                &http.Client{Timeout: 0}, // per-call timeouts via context
 	}
 }
 
@@ -540,8 +546,9 @@ func (d *Daemon) sweep(ctx context.Context) {
 	log.Printf("=== sweep done ===")
 }
 
-// pinBest switches immediately only when there is no healthy current choice.
-// Latency improvements require hysteresis, repeated confirmation and dwell time.
+// pinBest switches immediately when there is no healthy current choice or the
+// best fresh measurement is severely better. Ordinary improvements retain
+// hysteresis, repeated confirmation and dwell time to prevent flapping.
 func (d *Daemon) pinBest() {
 	if !d.autoPin {
 		return
@@ -597,19 +604,25 @@ func (d *Daemon) pinBest() {
 				actual, curRank.LatencyMs, best.tag, best.ms, d.hysteresisPct)
 			return
 		}
-		if time.Since(d.lastSwitch) < d.minSwitch {
-			log.Printf("pinBest: keep %s during dwell (%s remaining)", actual, d.minSwitch-time.Since(d.lastSwitch))
-			return
-		}
-		if d.candidate == best.tag {
-			d.candidateN++
+		severe := impPct >= int64(d.severeImprovePct)
+		if severe {
+			log.Printf("pinBest: %s is %d%% faster than %s; bypassing dwell and confirmation",
+				best.tag, impPct, actual)
 		} else {
-			d.candidate = best.tag
-			d.candidateN = 1
-		}
-		if d.candidateN < d.improveConfirm {
-			log.Printf("pinBest: candidate %s needs confirmation %d/%d", best.tag, d.candidateN, d.improveConfirm)
-			return
+			if time.Since(d.lastSwitch) < d.minSwitch {
+				log.Printf("pinBest: keep %s during dwell (%s remaining)", actual, d.minSwitch-time.Since(d.lastSwitch))
+				return
+			}
+			if d.candidate == best.tag {
+				d.candidateN++
+			} else {
+				d.candidate = best.tag
+				d.candidateN = 1
+			}
+			if d.candidateN < d.improveConfirm {
+				log.Printf("pinBest: candidate %s needs confirmation %d/%d", best.tag, d.candidateN, d.improveConfirm)
+				return
+			}
 		}
 	} else {
 		d.candidateN = 0
@@ -625,10 +638,9 @@ func (d *Daemon) pinBest() {
 	d.candidateN = 0
 }
 
-// liveness: resolve select.now to a concrete outbound tag (recursing through
-// urltest groups), probe via that tag's dedicated port. On consecutive
-// failures, rotate select.now to the next-ranked alive outbound. After
-// ROTATIONS_BEFORE_FORCE_SWEEP rotations without success, force a sweep.
+// liveness refreshes the current outbound's rank on every successful probe.
+// On consecutive failures it rotates to the fastest freshly verified candidate.
+// After ROTATIONS_BEFORE_FORCE_SWEEP rotations without success, force a sweep.
 func (d *Daemon) liveness(ctx context.Context) {
 	tag, err := d.resolveNow()
 	if err != nil {
@@ -653,8 +665,11 @@ func (d *Daemon) liveness(ctx context.Context) {
 		}
 	}
 
-	_, err = d.probeViaPort(ctx, port)
+	rtt, err := d.probeViaPort(ctx, port)
 	if err == nil {
+		d.mu.Lock()
+		d.rankings[tag] = RankEntry{LatencyMs: int64(rtt / time.Millisecond), UpdatedAt: time.Now().Unix()}
+		d.mu.Unlock()
 		d.failCnt = 0
 		d.rotCnt = 0
 		return
@@ -669,13 +684,12 @@ func (d *Daemon) liveness(ctx context.Context) {
 		return
 	}
 
-	cur, _ := d.nowPick()
-	next := d.nextAlive(cur)
-	if next == "" || next == cur {
-		log.Printf("liveness: no alternative outbound, sticking with %s", cur)
+	next := d.nextAlive(ctx, tag)
+	if next == "" || next == tag {
+		log.Printf("liveness: no alternative outbound, sticking with %s", tag)
 		return
 	}
-	log.Printf("liveness: rotating select.now: %s -> %s", cur, next)
+	log.Printf("liveness: rotating select.now: %s -> %s", tag, next)
 	if err := d.setPick(next); err != nil {
 		log.Printf("liveness: setPick: %v", err)
 		return
@@ -693,9 +707,10 @@ func (d *Daemon) liveness(ctx context.Context) {
 	}
 }
 
-// nextAlive returns the lowest-latency ranked alive tag != current. Falls
-// back to any pool tag without recent verdict. Never returns a tag known dead.
-func (d *Daemon) nextAlive(current string) string {
+// nextAlive freshly measures the best-ranked candidates and returns the
+// fastest live one. Cached latency only determines which candidates are worth
+// probing; it must not by itself decide a failure-driven switch.
+func (d *Daemon) nextAlive(ctx context.Context, current string) string {
 	type entry struct {
 		tag string
 		ms  int64
@@ -718,21 +733,65 @@ func (d *Daemon) nextAlive(current string) string {
 	}
 	d.mu.Unlock()
 	sort.Slice(sorted, func(i, j int) bool { return sorted[i].ms < sorted[j].ms })
+
+	candidates := []string{}
 	for _, e := range sorted {
 		if e.tag != current {
-			return e.tag
+			candidates = append(candidates, e.tag)
 		}
 	}
-	pool, err := d.listPool()
-	if err != nil {
-		return ""
-	}
-	for _, t := range pool {
-		if t != current && !dead[t] {
-			return t
+	if len(candidates) == 0 {
+		pool, err := d.listPool()
+		if err != nil {
+			return ""
+		}
+		for _, tag := range pool {
+			if tag != current && !dead[tag] {
+				candidates = append(candidates, tag)
+			}
 		}
 	}
-	return ""
+	limit := d.failoverCandidates
+	if limit < 1 {
+		limit = 1
+	}
+	if len(candidates) > limit {
+		candidates = candidates[:limit]
+	}
+
+	bestTag := ""
+	bestRTT := time.Duration(1<<63 - 1)
+	probed := 0
+	for _, tag := range candidates {
+		d.mu.Lock()
+		port, ok := d.portMap[tag]
+		d.mu.Unlock()
+		if !ok {
+			continue
+		}
+		rtt, err := d.probeViaPort(ctx, port)
+		probed++
+		now := time.Now().Unix()
+		d.mu.Lock()
+		if err != nil {
+			d.rankings[tag] = RankEntry{Failed: true, UpdatedAt: now}
+		} else {
+			d.rankings[tag] = RankEntry{LatencyMs: int64(rtt / time.Millisecond), UpdatedAt: now}
+		}
+		d.mu.Unlock()
+		if err != nil {
+			log.Printf("liveness: failover candidate %s -> fail (%v)", tag, err)
+			continue
+		}
+		log.Printf("liveness: failover candidate %s -> %dms", tag, rtt/time.Millisecond)
+		if rtt < bestRTT {
+			bestTag, bestRTT = tag, rtt
+		}
+	}
+	if probed > 0 {
+		d.persistRankings()
+	}
+	return bestTag
 }
 
 // ── Telegram selector (tg-select) management ────────────────────────────────
