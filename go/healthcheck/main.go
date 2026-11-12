@@ -1113,6 +1113,9 @@ func main() {
 	if len(os.Args) > 1 && os.Args[1] == "render" {
 		os.Exit(runRender(os.Args[2:]))
 	}
+	if len(os.Args) > 1 && os.Args[1] == "refresh" {
+		os.Exit(runRefresh(os.Args[2:]))
+	}
 	flag.Parse()
 	log.SetFlags(log.LstdFlags)
 	log.SetPrefix("hynet-hc ")

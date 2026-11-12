@@ -11,10 +11,12 @@ Fill any combination of `SUBSCRIPTION_1…5` and optional `HW_ID_1…5`; at leas
 | Component | Purpose |
 |---|---|
 | [`sing-box`](https://github.com/SagerNet/sing-box) 1.15.0-alpha.13 (canary, slim, built from source in the Dockerfile, `ARG SINGBOX_VERSION`) | Proxy runtime, owns the TUN. Build tags: `with_quic,with_grpc,with_utls,with_clash_api,badlinkname,tfogo_checklinkname0`. Go 1.26.10, `CGO_ENABLED=0`, upstream release LDFLAGS plus version and strip flags. |
-| `sub_to_singbox.py` + `merge-subscriptions.py` | Parse the main subscription and independent extra providers, preserving each provider's URL, UA and HWID. Failed providers keep their last known good nodes. Emit one TUN, one `select`, per-country groups and isolated probe ports. |
+| `healthcheck render` (Go) | Parse Base64 URI lists, Clash YAML, Xray JSON, SIP008 and sing-box outbounds from up to five independent providers. Preserve each provider's URL, UA and optional HWID; failed providers keep their last known good nodes. Emit one TUN, one `select` and isolated probe ports. |
 | `entrypoint.sh` | Initial fetch+render, background daily refresh, foreground sing-box respawn loop, hourly log/state maintenance. |
-| `sub-refresh.sh` | curl (dual-mirror, direct-WAN proxy) → convert/merge → `sing-box check` → atomic swap → SIGTERM. Restores `select.now` and rolls back if the new config does not start. |
+| `healthcheck refresh` (called by `sub-refresh.sh`) | Dual-mirror fetch over direct WAN → convert/merge → `sing-box check` → atomic swap → SIGTERM. Restores `select.now` and rolls back if the new config does not start. |
 | `healthcheck` (Go binary) | Real-data probe daemon. Periodic 100 KB downloads through each pool outbound, ranks by latency, auto-pins fastest live, rotates on failure. Catches handshake-OK / data-reset servers that fool sing-box's HEAD probe. |
+
+The runtime is Go-only: no Python, curl, jq, gcompat or full iproute2. UPX compression is enabled by default (`ENABLE_UPX=1`).
 
 ## Tags
 
@@ -33,6 +35,8 @@ cannot run containers at all — per the docs the Container package exists only 
 | Variable | Default | Purpose |
 |---|---|---|
 | `REFRESH_INTERVAL` | `86400` | Seconds between auto-refreshes. |
+| `TMPFS_SIZE` | `64M` | RAM-backed `/tmp` size; use `16M` or `32M` on memory-constrained boards. |
+| `GOMEMLIMIT` | `96MiB` | Per-process Go heap soft limit for healthcheck and sing-box; tune down only after measuring real traffic. |
 | `SINGBOX_TUN_NAME` | `opkgtun0` | TUN interface name inside the container netns. |
 | `TUN_ADDR` | `172.19.0.1` | TUN IPv4 address; `/30` is emitted. |
 | `TUN_MTU` | `1420` | TUN MTU. |
@@ -355,12 +359,14 @@ cd hynet-singbox
 docker buildx build --platform linux/arm/v7 --provenance=false --sbom=false --load -t hynet-singbox:armv7 .
 ```
 
+UPX is enabled by default. Add `--build-arg ENABLE_UPX=0` for an uncompressed debugging build.
+
 ## Resource use on RB4011
 
 | Resource | Idle | Active (single TCP stream) |
 |---|---|---|
 | RAM (container) | ~50 MB | ~90–140 MB |
-| Image on disk | rootfs ≤70 MB (~22 MB compressed pull after the slim build) | — |
+| Image on disk | rootfs ~22.6 MB (~19.5 MB compressed Docker archive) | — |
 | NAND writes/day at runtime | **0** (all state on tmpfs inside the container) | — |
 
 ## Operational notes — refresh, deploys, reading health
@@ -371,7 +377,7 @@ The sharp edges an operator (or an automated agent) hits in practice.
 
 Every `sub1…sub5` refreshes independently with its own URL, UA and optional HWID, including the `hynet-connect.com`/`hynet.cloud` mirror when applicable. The converter rejects HTML error pages. A failed provider keeps nodes from the current running config while all other pools update. There are no manual fallback URIs.
 
-Before sing-box starts, fetches use the ordinary container default route. While the TUN is active, curl uses the loopback HTTP inbound `refresh-direct` at `127.0.0.1:7899`, statically routed to the `direct` outbound. `route.auto_detect_interface=true` binds that egress to veth and prevents a TUN loop. Thus subscription updates do not depend on a working VPN exit and need no host mount.
+Before sing-box starts, fetches use the ordinary container default route. While the TUN is active, the Go HTTP client uses the loopback HTTP inbound `refresh-direct` at `127.0.0.1:7899`, statically routed to the `direct` outbound. `route.auto_detect_interface=true` binds that egress to veth and prevents a TUN loop. Thus subscription updates do not depend on a working VPN exit and need no host mount.
 
 Monitor `/tmp/config.json`, `/tmp/sub-refresh.log`, `df /tmp` and process memory, not just `select.now`. The maintenance loop trims `sing-box.log`, `healthcheck.log` and `sub-refresh.log` to the last 500 lines hourly and reports config age, tmpfs and RSS.
 
@@ -399,18 +405,17 @@ same servers' `:8444` vision / vmess / trojan / ss work, and RU grpc works. This
 **line-specific DPI, not a server or sing-box fault** — the selector simply never picks the
 dead grpc nodes. Don't restart or reconfigure for them.
 
-### Go subscription renderer — preparatory, not active
+### Go-only rendering and refresh
 
-The healthcheck binary also contains an opt-in `render` subcommand for the planned Python-free image. It parses Base64 URI lists, Clash YAML, Xray JSON, SIP008 and existing sing-box outbounds; supports VLESS, VMess, Trojan, Shadowsocks, Hysteria2 and TUIC; and implements independent providers, hynet mirrors, optional HWID, sticky SNI, per-provider keep-last-known-good, country maps and probe-port maps.
+`healthcheck render` writes a candidate configuration without restarting anything. `healthcheck refresh` additionally validates it with `sing-box check`, skips an identical pool, saves the previous config, atomically installs the candidate, restarts sing-box when it was running, waits for Clash API, restores `select.now`, and reinstalls the previous config if the new one does not start.
 
 ```sh
-/usr/local/bin/healthcheck render \
+/usr/local/bin/healthcheck refresh \
     --subscriptions-dir /tmp/sing-box/subscriptions.d \
-    --active-config /tmp/config.json \
-    --out /tmp/config.go.json
+    --active-config /tmp/config.json
 ```
 
-This command only writes a candidate configuration. The entrypoint and `sub-refresh.sh` still use the Python pipeline as the production fallback; `render` does not restart sing-box or change `select.now`. Local differential checks against the Python pipeline covered five providers and a failed-provider carry-over, with matching JSON, country maps and probe maps, followed by `sing-box check`. No router deployment has been performed.
+The old Python pipeline was checked against Go with local differential fixtures: five providers and a failed-provider carry-over produced matching JSON, country maps and probe maps, followed by `sing-box check`. Production uses only the Go path; no Python fallback remains in the image.
 
 ### Deploying a script edit to a running container
 
