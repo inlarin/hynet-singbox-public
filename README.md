@@ -52,7 +52,7 @@ cannot run containers at all — per the docs the Container package exists only 
 | `SINGBOX_API_LISTEN` / `SINGBOX_API_PORT` | `172.20.0.2` / `9091` | Native API listen address/port. |
 | `SINGBOX_DASHBOARD_PATH` | `/tmp/dashboard` | Dashboard download directory on tmpfs. |
 | `SINGBOX_DASHBOARD_UPDATE_INTERVAL` | `7d` | Dashboard update interval. |
-| `PROBE_REAL_DATA` | `0` | `1` makes `healthcheck probe` test the current outbound with real data in addition to Clash API. |
+| `PROBE_REAL_DATA` | `0` | `1` makes `healthcheck probe` test the current outbound with real data in addition to Clash API. Use `--url <URL>` and `--bytes <N>` for custom checks; `--bytes -1` accepts any response size. |
 | `SINGBOX_TUN_STACK` | `none` | Omit `stack` to use sing-tun's own 1.15 stack. `system` is the legacy kernel option; gVisor tags are deliberately not built. |
 | `CLASH_ADDR` | `172.20.0.2:9090` | Clash API listen address, restricted to the isolated veth rather than `0.0.0.0`. |
 | `CLASH_SECRET` | *(required)* | Bearer token for Clash API. |
@@ -170,7 +170,7 @@ Pick a storage device for the image rootfs (~70 MB). On most MikroTiks this is i
     tmpfs=/tmp:64M:fixed shm-size=16MiB \
     memory-high=500MiB memory-max=600MiB \
     restart-policy=on-failure restart-max-count=5 restart-interval=5m \
-    healthcheck-cmd="/usr/local/bin/healthcheck probe" \
+    healthcheck-cmd="/usr/local/bin/healthcheck probe --api http://172.20.0.2:9090" \
     healthcheck-interval=30s healthcheck-timeout=10s healthcheck-start-period=30s \
     start-on-boot=yes logging=yes
 ```

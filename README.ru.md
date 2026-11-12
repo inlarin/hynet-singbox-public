@@ -52,7 +52,7 @@ Runtime полностью на Go: Python, curl, jq, gcompat и полный ip
 | `SINGBOX_API_LISTEN` / `SINGBOX_API_PORT` | `172.20.0.2` / `9091` | Адрес и порт нативной API. |
 | `SINGBOX_DASHBOARD_PATH` | `/tmp/dashboard` | Каталог загрузки dashboard на tmpfs. |
 | `SINGBOX_DASHBOARD_UPDATE_INTERVAL` | `7d` | Интервал обновления dashboard. |
-| `PROBE_REAL_DATA` | `0` | `1` добавляет `healthcheck probe` проверку текущего выхода реальной загрузкой. |
+| `PROBE_REAL_DATA` | `0` | `1` добавляет `healthcheck probe` проверку текущего выхода реальной загрузкой. Для произвольной проверки используй `--url <URL>` и `--bytes <N>`; `--bytes -1` принимает любой размер. |
 | `SINGBOX_TUN_STACK` | `none` | Опустить `stack` и использовать собственный стек sing-tun 1.15. `system` — legacy kernel-вариант; gVisor-теги намеренно не собираются. |
 | `CLASH_ADDR` | `172.20.0.2:9090` | listen-адрес Clash API только на изолированном veth, не `0.0.0.0`. |
 | `CLASH_SECRET` | *(обязательная)* | Bearer-токен Clash API. |
@@ -170,7 +170,7 @@ RouterOS ждёт физического подтверждения — нажм
     tmpfs=/tmp:64M:fixed shm-size=16MiB \
     memory-high=500MiB memory-max=600MiB \
     restart-policy=on-failure restart-max-count=5 restart-interval=5m \
-    healthcheck-cmd="/usr/local/bin/healthcheck probe" \
+    healthcheck-cmd="/usr/local/bin/healthcheck probe --api http://172.20.0.2:9090" \
     healthcheck-interval=30s healthcheck-timeout=10s healthcheck-start-period=30s \
     start-on-boot=yes logging=yes
 ```
