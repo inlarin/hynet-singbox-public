@@ -167,7 +167,7 @@ Pick a storage device for the image rootfs (~70 MB). On most MikroTiks this is i
     interface=veth-hynet envlist=hynet \
     root-dir=<storage>/containers/hynet \
     dns=172.20.0.1 \
-    tmpfs=64M@/tmp shm-size=16MiB \
+    tmpfs=/tmp:64M:fixed shm-size=16MiB \
     memory-high=500MiB memory-max=600MiB \
     restart-policy=on-failure restart-max-count=5 restart-interval=5m \
     healthcheck-cmd="/usr/local/bin/healthcheck probe" \
@@ -177,7 +177,7 @@ Pick a storage device for the image rootfs (~70 MB). On most MikroTiks this is i
 
 > `/dev/net/tun` is auto-exposed to RouterOS containers — no explicit mount is needed (the device is included in the default `/dev/` set per [MikroTik docs](https://help.mikrotik.com/docs/spaces/ROS/pages/84901929/Container)).
 >
-> **No host-side bind mount needed.** RouterOS mounts `tmpfs` through the container property `tmpfs=64M@/tmp`, so all runtime state (subscription, generated config, country cache, healthcheck rankings, sing-box log) stays in RAM. NAND wear at runtime: 0 writes. The entrypoint detects an existing mount and does not mount it again; on other container engines it retains a fallback mount attempt and logs a `WARN` if that fails.
+> **No host-side bind mount needed.** RouterOS mounts `tmpfs` through the container property `tmpfs=/tmp:64M:fixed`, so all runtime state (subscription, generated config, country cache, healthcheck rankings, sing-box log) stays in RAM. NAND wear at runtime: 0 writes. The entrypoint detects an existing mount and does not mount it again; on other container engines it retains a fallback mount attempt and logs a `WARN` if that fails.
 >
 > **Memory limits are mandatory on production.** sing-box's TUN inbound with `auto_route=true` catches every connection in the container netns. Under real LAN load the per-connection state can balloon. `memory-high` throttles the container under pressure; `memory-max` stops it before the host is endangered. When per-container and global limits coexist, the lower one wins. Use the profile table below for smaller boards and keep swap disabled on internal flash.
 

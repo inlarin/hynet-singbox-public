@@ -167,7 +167,7 @@ RouterOS ждёт физического подтверждения — нажм
     interface=veth-hynet envlist=hynet \
     root-dir=<storage>/containers/hynet \
     dns=172.20.0.1 \
-    tmpfs=64M@/tmp shm-size=16MiB \
+    tmpfs=/tmp:64M:fixed shm-size=16MiB \
     memory-high=500MiB memory-max=600MiB \
     restart-policy=on-failure restart-max-count=5 restart-interval=5m \
     healthcheck-cmd="/usr/local/bin/healthcheck probe" \
@@ -177,7 +177,7 @@ RouterOS ждёт физического подтверждения — нажм
 
 > `/dev/net/tun` пробрасывается в контейнер автоматически — отдельный mount не нужен (устройство входит в дефолтный набор `/dev/` по [документации MikroTik](https://help.mikrotik.com/docs/spaces/ROS/pages/84901929/Container)).
 >
-> **Никакого host-side bind-маунта не нужно.** RouterOS монтирует `tmpfs` через свойство контейнера `tmpfs=64M@/tmp`, и весь runtime state (подписка, сгенерированный конфиг, country cache, рейтинги healthcheck'а, sing-box log) живёт в RAM. NAND wear на runtime: 0 записей. Entrypoint видит существующий mount и не повторяет его; на других container engines остаётся fallback-попытка с `WARN` при неудаче.
+> **Никакого host-side bind-маунта не нужно.** RouterOS монтирует `tmpfs` через свойство контейнера `tmpfs=/tmp:64M:fixed`, и весь runtime state (подписка, сгенерированный конфиг, country cache, рейтинги healthcheck'а, sing-box log) живёт в RAM. NAND wear на runtime: 0 записей. Entrypoint видит существующий mount и не повторяет его; на других container engines остаётся fallback-попытка с `WARN` при неудаче.
 >
 > **Лимиты памяти обязательны на проде.** TUN-inbound sing-box с `auto_route=true` ловит каждое connection в netns контейнера. Под нагрузкой per-connection state может разрастись. `memory-high` начинает тормозить процессы под давлением, `memory-max` останавливает контейнер до угрозы хосту. Если заданы лимиты и глобально, и на контейнере, побеждает меньший. Для малых плат используй профили ниже, swap на внутренней flash не включай.
 

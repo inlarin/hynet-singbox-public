@@ -358,8 +358,11 @@ func mergeProvider(ctx context.Context, config jsonObject, provider subscription
 		node["tag"] = tag
 		if utlsFingerprint != "keep" {
 			tls := objectValue(node["tls"])
-			if utls, ok := tls["utls"].(map[string]any); ok {
-				utls["fingerprint"] = utlsFingerprint
+			if utlsValue, ok := tls["utls"]; ok {
+				utls := objectValue(utlsValue)
+				if len(utls) > 0 {
+					utls["fingerprint"] = utlsFingerprint
+				}
 			}
 		}
 		if connectTimeout != "keep" {
