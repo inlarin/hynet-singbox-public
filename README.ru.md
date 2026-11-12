@@ -245,17 +245,23 @@ Bulk-импорт через `:foreach` массив-литерал — одна
 
 # Сначала закрепить DHCP-аренду Tenda: все клиенты за её NAT имеют один source IP.
 /ip dhcp-server lease make-static [find where address=<TENDA-NAT-IP> and mac-address=<TENDA-MAC>]
+/ip firewall address-list add list=hynet-clients address=<TENDA-NAT-IP> comment="Tenda NAT"
 :foreach c in={"10.0.0.0/8";"172.16.0.0/12";"192.168.0.0/16"} do={ /ip firewall address-list add list=hynet-direct address=$c comment="hynet:direct-private" }
-/ip/firewall/mangle add chain=prerouting src-address=<TENDA-NAT-IP> \
+/ip/firewall/mangle add chain=prerouting src-address-list=hynet-clients \
     dst-address-list=hynet-direct action=accept passthrough=yes
-/ip/firewall/mangle add chain=prerouting src-address=<TENDA-NAT-IP> \
+/ip/firewall/mangle add chain=prerouting src-address-list=hynet-clients \
     dst-address-type=local action=accept passthrough=yes
-/ip/firewall/mangle add chain=prerouting src-address=<TENDA-NAT-IP> \
+/ip/firewall/mangle add chain=prerouting src-address-list=hynet-clients \
     connection-state=new dst-address-list=hynet \
     action=mark-connection new-connection-mark=hynet-cm passthrough=yes
-/ip/firewall/mangle add chain=prerouting src-address=<TENDA-NAT-IP> \
+/ip/firewall/mangle add chain=prerouting src-address-list=hynet-clients \
     connection-mark=hynet-cm \
     action=mark-routing new-routing-mark=via-hynet passthrough=no
+
+# Управление source-адресами без изменения mangle. Используются адреса, видимые
+# RouterOS: отдельные устройства за одним нижестоящим NAT различить нельзя.
+/ip firewall address-list add list=hynet-clients address=<CLIENT-IP> comment="<имя>"
+/ip firewall address-list remove [find where list=hynet-clients and address=<CLIENT-IP>]
 
 /ip/route add dst-address=0.0.0.0/0 gateway=172.20.0.2 routing-table=via-hynet \
     distance=1 check-gateway=ping comment="hynet container"
