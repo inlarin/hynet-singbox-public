@@ -53,6 +53,8 @@ cannot run containers at all — per the docs the Container package exists only 
 | `PROBE_TIMEOUT` | `12s` | Per-probe wall-clock timeout. Implies a speed floor of ≈8 KB/s with the default 100 KB payload. |
 | `FAIL_THRESHOLD` | `2` | Consecutive liveness failures before rotating `select.now`. |
 | `HYSTERESIS_PCT` | `15` | Minimum response-time improvement required before switching to a faster server. |
+| `SEVERE_IMPROVE_PCT` | `50` | Improvement large enough to bypass dwell and repeated confirmation after a fresh sweep. |
+| `FAILOVER_CANDIDATES` | `5` | Best-ranked candidates freshly measured before failure-driven rotation; the fastest live result wins. |
 | `PROBE_CONCURRENCY` | `4` | Concurrent probes. The current server goes first and every result is persisted immediately. |
 | `MIN_SWITCH_INTERVAL` | `15m` | Minimum dwell before switching for lower latency; failure-driven rotation remains immediate. |
 | `IMPROVE_CONFIRMATIONS` | `2` | Consecutive sweeps required to confirm a latency improvement. |
@@ -317,11 +319,11 @@ The container ships a sidecar healthcheck daemon (Go, runs as a child of `entryp
 
 | Loop | Cadence | What it does |
 |---|---|---|
-| Liveness | every `LIVENESS_INTERVAL` (30 s) | Resolves `select.now` (recursing through `urltest-*` groups), probes that specific outbound via its dedicated port. Real-data download — partial response = fail. After `FAIL_THRESHOLD` (2) consecutive failures → rotate `select.now` to next-ranked-alive. After `ROTATIONS_BEFORE_FORCE_SWEEP` (3) rotations w/o success → force a full sweep. |
+| Liveness | every `LIVENESS_INTERVAL` (30 s) | Resolves `select.now` (recursing through `urltest-*` groups), probes that specific outbound via its dedicated port and refreshes its ranking entry. Real-data download — partial response = fail. After `FAIL_THRESHOLD` (2) consecutive failures, freshly measure up to `FAILOVER_CANDIDATES` best-ranked alternatives and rotate to the fastest live result. After `ROTATIONS_BEFORE_FORCE_SWEEP` (3) rotations w/o success → force a full sweep. |
 | Ranking sweep | every `RANK_INTERVAL` (10 min) | Probes every outbound, up to 4 concurrently. RU is excluded via `/tmp/probe_countries.json`. Every result is persisted immediately; entries older than `RANK_STALE_AFTER` are ignored. **`select.now` is not changed during measurement**. |
-| Auto-pin | after the first probes and every sweep | `select.now` ← fastest alive server. An improvement ≥15% needs `IMPROVE_CONFIRMATIONS` confirmations and `MIN_SWITCH_INTERVAL` dwell. Failure rotation is immediate. `AUTO_PIN=0` preserves manual selection. |
+| Auto-pin | after the first probes and every sweep | `select.now` ← fastest alive server. An ordinary improvement ≥15% needs `IMPROVE_CONFIRMATIONS` confirmations and `MIN_SWITCH_INTERVAL` dwell. An improvement ≥`SEVERE_IMPROVE_PCT` bypasses both after the fresh sweep. Failure rotation is immediate and uses fresh candidate measurements. `AUTO_PIN=0` preserves manual selection. |
 
-**`select.now` changes after a confirmed current-server failure or a sustained, repeatedly confirmed improvement.** Telegram API and MTProto CONNECT are part of every candidate's general health probe; no separate Telegram pool is created.
+**`select.now` changes after a confirmed current-server failure, a severe freshly measured improvement, or a sustained, repeatedly confirmed ordinary improvement.** Telegram API and MTProto CONNECT are part of every candidate's general health probe; no separate Telegram pool is created.
 
 The daemon's log is `/tmp/healthcheck.log`, the sing-box log `/tmp/sing-box.log` (level warn), the config `/tmp/config.json` (all on the container's 64 MB tmpfs). Set `HEALTHCHECK_ENABLED=0` to skip the daemon and fall back to sing-box's built-in HEAD-probe urltest (no disruption either, but back to the handshake-OK / data-reset fooler problem).
 
