@@ -1,0 +1,11 @@
+# build artifacts
+*.exe
+*.tgz
+/go/sub2singbox/sub2singbox
+
+# local state
+*.log
+
+# Local MikroTik documentation snapshots — third-party content,
+# kept locally for offline verification of RouterOS commands.
+/docs/mikrotik-reference/

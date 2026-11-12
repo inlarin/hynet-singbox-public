@@ -1,0 +1,5 @@
+# Shell scripts run on busybox/ash (routers + Linux container image build).
+# Force LF so a Windows (CRLF) checkout never breaks case/for parsing on deploy.
+*.sh                          text eol=lf
+*.script                      text eol=lf
+singbox-healthcheck-watchdog  text eol=lf
