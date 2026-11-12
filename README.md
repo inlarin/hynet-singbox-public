@@ -40,6 +40,19 @@ cannot run containers at all — per the docs the Container package exists only 
 | `SINGBOX_TUN_NAME` | `opkgtun0` | TUN interface name inside the container netns. |
 | `TUN_ADDR` | `172.19.0.1` | TUN IPv4 address; `/30` is emitted. |
 | `TUN_MTU` | `1420` | TUN MTU. |
+| `SINGBOX_TUN_MULTI_QUEUE` | `0` | `1` enables multi-queue TUN on the sing-tun 1.15 stack for multi-core scaling; canary-test first. |
+| `INTERRUPT_EXIST_CONNECTIONS` | `0` | `0` keeps established inbound connections when the selected server changes; `1` interrupts them. |
+| `UDP_NAT_MAX` | `0` | Maximum UDP NAT sessions; `0` lets sing-box choose. Use `4096` on memory-constrained boards. |
+| `LOG_LEVEL` | `warn` | sing-box log level; use `info`/`debug` only temporarily. |
+| `SINGBOX_DNS_OPTIMISTIC` | *(empty)* | Optimistic DNS cache timeout, e.g. `10m`. Empty disables it. |
+| `SINGBOX_DNS_TIMEOUT` | *(empty)* | Optional DNS query timeout, e.g. `5s`. |
+| `SINGBOX_DNS_CACHE_CAPACITY` | `0` | DNS LRU capacity, minimum accepted value is 1024; use 2048 on small boards. |
+| `SINGBOX_CACHE_BUFFER_SIZE` | *(empty)* | Optional cache-file write buffer, e.g. `256KB` on small boards. |
+| `SINGBOX_API_ENABLED` | `0` | `1` enables native sing-box API and dashboard. Keep restricted by secret and firewall. |
+| `SINGBOX_API_LISTEN` / `SINGBOX_API_PORT` | `172.20.0.2` / `9091` | Native API listen address/port. |
+| `SINGBOX_DASHBOARD_PATH` | `/tmp/dashboard` | Dashboard download directory on tmpfs. |
+| `SINGBOX_DASHBOARD_UPDATE_INTERVAL` | `7d` | Dashboard update interval. |
+| `PROBE_REAL_DATA` | `0` | `1` makes `healthcheck probe` test the current outbound with real data in addition to Clash API. |
 | `SINGBOX_TUN_STACK` | `none` | Omit `stack` to use sing-tun's own 1.15 stack. `system` is the legacy kernel option; gVisor tags are deliberately not built. |
 | `CLASH_ADDR` | `172.20.0.2:9090` | Clash API listen address, restricted to the isolated veth rather than `0.0.0.0`. |
 | `CLASH_SECRET` | *(required)* | Bearer token for Clash API. |
@@ -154,15 +167,35 @@ Pick a storage device for the image rootfs (~70 MB). On most MikroTiks this is i
     interface=veth-hynet envlist=hynet \
     root-dir=<storage>/containers/hynet \
     dns=172.20.0.1 \
-    memory-high=500MiB \
+    tmpfs=64M@/tmp shm-size=16MiB \
+    memory-high=500MiB memory-max=600MiB \
+    restart-policy=on-failure restart-max-count=5 restart-interval=5m \
+    healthcheck-cmd="/usr/local/bin/healthcheck probe" \
+    healthcheck-interval=30s healthcheck-timeout=10s healthcheck-start-period=30s \
     start-on-boot=yes logging=yes
 ```
 
 > `/dev/net/tun` is auto-exposed to RouterOS containers — no explicit mount is needed (the device is included in the default `/dev/` set per [MikroTik docs](https://help.mikrotik.com/docs/spaces/ROS/pages/84901929/Container)).
 >
-> **No host-side bind mount needed.** The container self-mounts `tmpfs` on its own `/tmp` from `entrypoint.sh` at start (64 MB, `mode=1777`), so all runtime state (subscription, generated config, country cache, healthcheck rankings, sing-box log) stays in RAM. NAND wear at runtime: 0 writes (the container's own tmpfs intercepts everything before the host's overlay sees it). On hosts that deny `CAP_SYS_ADMIN` to the container the tmpfs mount fails silently and `/tmp` falls back to the overlay (the entrypoint logs a `WARN` line) — functionally fine, just writes to NAND.
+> **No host-side bind mount needed.** RouterOS mounts `tmpfs` through the container property `tmpfs=64M@/tmp`, so all runtime state (subscription, generated config, country cache, healthcheck rankings, sing-box log) stays in RAM. NAND wear at runtime: 0 writes. The entrypoint detects an existing mount and does not mount it again; on other container engines it retains a fallback mount attempt and logs a `WARN` if that fails.
 >
-> **`memory-high=500MiB` is mandatory, not optional.** sing-box's TUN inbound with `auto_route=true` catches every connection in the container netns. Under real LAN load (browser opens YouTube + several apps simultaneously) the per-connection state can balloon if anything regresses (we saw a single misconfiguration eat 1 GB of RAM in seconds and reboot the router). With the cap the kernel kills the container before it kills the host. Default safe value: half of router RAM. If your router has 256 MB RAM total, lower this to `memory-high=120MiB`.
+> **Memory limits are mandatory on production.** sing-box's TUN inbound with `auto_route=true` catches every connection in the container netns. Under real LAN load the per-connection state can balloon. `memory-high` throttles the container under pressure; `memory-max` stops it before the host is endangered. When per-container and global limits coexist, the lower one wins. Use the profile table below for smaller boards and keep swap disabled on internal flash.
+
+#### Suggested profiles
+
+| Parameter | RB4011 / RB5009 | L009 | hAP ax lite, canary only |
+|---|---:|---:|---:|
+| `memory-high` | 500MiB | 220–250MiB | 100–120MiB |
+| `memory-max` | 600MiB | 280–300MiB | 128–140MiB |
+| `tmpfs` | 64M | 32M | 16M |
+| `shm-size` | 16–32MiB | 16MiB | 8–16MiB |
+| `GOMEMLIMIT` | 96MiB | 64–96MiB | 64MiB |
+| `PROBE_CONCURRENCY` | 4 | 1–2 | 1 |
+| `multi_queue` | canary | canary | keep disabled initially |
+| Native dashboard | optional | disabled | disabled |
+| Swap | disabled | disabled | disabled |
+
+Use `restart-policy=on-failure`, `restart-max-count=5`, `restart-interval=5m` and the native `healthcheck probe` command. `stop-on-unhealthy` should remain disabled until a temporary WAN outage has been shown not to stop the container unnecessarily. Keep the `container` log topic on a memory or remote-syslog action, not on a disk action.
 
 #### Version compatibility
 
@@ -342,6 +375,7 @@ The daemon's log is `/tmp/healthcheck.log`, the sing-box log `/tmp/sing-box.log`
 ```bash
 docker run --rm -it \
     --cap-add=NET_ADMIN --device /dev/net/tun \
+    --tmpfs /tmp:rw,size=64M \
     -e SUBSCRIPTION_1='https://your-provider/sub' \
     -e CLASH_SECRET='replace-with-random' \
     -e CLASH_ADDR=0.0.0.0:9090 \
