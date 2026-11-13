@@ -82,6 +82,33 @@ Runtime полностью на Go: Python, curl, jq, gcompat и полный ip
 | `ROTATIONS_BEFORE_FORCE_SWEEP` | `3` | Сколько ротаций `select.now` подряд без успеха до форсированного полного sweep'а. |
 | `STATE_DIR` / `PROBE_PORTS` | `/tmp/healthcheck` / `/tmp/probe_ports.json` | Пути состояния healthcheck на tmpfs. Telegram идёт через общий `select`; отдельный HY2-outbound не инжектируется. |
 
+## Графическое приложение MikroTik Service Manager
+
+Отдельное desktop-приложение на Tkinter для управления выборочным VPN на MikroTik. KN_GUI не изменяется и остаётся приложением для Keenetic.
+
+На Windows запусти `MikroTik Services.cmd` или выполни:
+
+```bash
+python scripts/mikrotik_service_manager.py
+```
+
+Возможности:
+
+- 119 сервисов из каталога KN_GUI, сгруппированных по категориям;
+- чекбоксы, поиск, фильтры и массовый выбор видимых сервисов;
+- просмотр FQDN, CIDR, DNS FWD и upstream-источников;
+- сохранение выбора в `config/services.txt`;
+- получение read-only export через существующий `tools/rsh.py` (`F5`) или импорт двух сохранённых файлов;
+- состояния `совпадает`, `добавить`, `изменить`, `удалить` и подробный diff перед изменениями;
+- сохранение полного RSC или только diff;
+- применение небольшого diff через `rsh.py --safe` после подтверждения, с предварительным `/export file=...` на роутере.
+
+Для применения требуется `tools/rsh.py` из основного проекта. Без него приложение работает офлайн: выбор, просмотр каталога, импорт export и генерация скриптов доступны полностью. Пароли приложение не запрашивает и не сохраняет.
+
+Один diff через Safe Mode ограничен 80 командами, чтобы не переполнить буфер RouterOS. Более крупный diff сохрани и применяй небольшими партиями через CLI. После успешного применения приложение повторно читает состояние роутера.
+
+Поля `fqdn_extra` и `ipv4_cidr_extra` в каталоге — локальные проверенные дополнения; при переносе обновлений KN_GUI они сохраняются отдельно от исходных списков. `dns_a_overrides` задаёт проверенные DNS-ответы `домен: IPv4` для IPv6-only сайтов; генератор дополнительно создаёт управляемый `/32` в `address-list`. Upstream-списки приложение автоматически не скачивает.
+
 ## Настройка RouterOS
 
 Контейнер терминирует прокси-туннель на собственном TUN. RouterOS заворачивает выбранный трафик на veth-IP контейнера как next-hop; ядро контейнера форвардит в TUN, sing-box egress'ит обратно через veth → ROS WAN.
@@ -211,6 +238,38 @@ RouterOS ждёт физического подтверждения — нажм
 
 Два дополняющих друг друга механизма, оба наполняют один и тот же `address-list=hynet`:
 
+#### Управляемый каталог сервисов (рекомендуется)
+
+Выбор сервисов находится в `config/services.txt`: одна строка — один сервис. Чтобы отключить сервис, закомментируй его строку через `#`. Проверенные FQDN, CIDR и DNS-корни хранятся в `config/services.json`; поле `upstream` там информационное (`review-only`), внешние списки автоматически не скачиваются и не применяются.
+
+```bash
+# Показать доступные сервисы; * означает выбранный.
+python scripts/generate_routeros_services.py list
+
+# Сгенерировать полный идемпотентный скрипт для новой установки.
+python scripts/generate_routeros_services.py generate --output scripts/routeros-services.rsc
+```
+
+Для существующего роутера сначала сохрани read-only export в игнорируемый каталог `.local/`:
+
+```routeros
+/ip firewall address-list export terse where comment~"hynet:"
+/ip dns static export terse where comment~"hynet:"
+```
+
+Затем передай оба файла генератору. Он выведет количество изменений и создаст скрипт только с добавлениями и удалениями:
+
+```bash
+python scripts/generate_routeros_services.py diff \
+    --current .local/rb4011-address-list.rsc \
+    --current .local/rb4011-dns-static.rsc \
+    --output .local/rb4011-services-diff.rsc
+```
+
+Diff не подключается к роутеру и ничего на нём не меняет. При отключении сервиса удаляются только его управляемые статические записи и FWD-правила. Динамические записи `created for …`, `speed.cloudflare.com` для healthcheck и записи с посторонними комментариями сохраняются. Полный скрипт только добавляет недостающее; для удаления отключённых сервисов используй diff. Применяй проверенный diff в Safe Mode.
+
+Лимит около 300 записей из KN_GUI относится к `object-group fqdn` на Keenetic, а не к RouterOS `address-list`; разбивать `hynet` по сервисам не нужно.
+
 #### 3a. Статические FQDN / CIDR
 
 Для сервисов со стабильной инфрой — apex'ы у которых есть A-запись + raw-IP сервисы (Telegram MTProto). RouterOS принимает DNS-имена прямо в `/ip firewall address-list` и резолвит их периодически (по [Address-lists docs](https://help.mikrotik.com/docs/spaces/ROS/pages/130220135/Address-lists), поле `address` принимает `DNS Name | IP address/netmask | IP-IP`).
@@ -271,7 +330,7 @@ Bulk-импорт через `:foreach` массив-литерал — одна
 
 `<upstream-DNS>` — то что использует сам роутер (видно в `/ip dns print`, поле `servers=`). **Не используй** `1.1.1.1` / `8.8.8.8` напрямую — выбери из тех резолверов которые роутят твой провайдер или твои собственные. Не указывай LAN-IP самого роутера — будет петля.
 
-> **regex vs `match-subdomain=yes`** — оба работают для catch'а субдоменов, но regex здесь предпочтительнее потому что может *исключить apex* (`.*\.X\.com$` требует ведущего `<что-то>.`, не матчит голый `X.com`). Apex не имеет A-записи, и его матчинг приводит к NXDOMAIN-ответам которые часть клиентов кэширует как "fail-fast" — плохо. По [DNS docs](https://help.mikrotik.com/docs/spaces/ROS/pages/37748767/DNS) regex matching "significantly slower than plain text entries" — на ~10 правил норм, на 50+ смотри CPU.
+> **regex vs `match-subdomain=yes`** — генератор использует точное `name` + `match-subdomain=yes`: это текущая проверенная конфигурация RB4011 и более быстрый plain-text match. Regex остаётся ручным вариантом, когда нужно специально исключить apex или выбрать узкий класс поддоменов. По [DNS docs](https://help.mikrotik.com/docs/spaces/ROS/pages/37748767/DNS) regex matching "significantly slower than plain text entries" — при росте числа regex-правил следи за CPU.
 
 > **Caveat: нативные мобильные приложения могут обходить DNS роутера** через DoH или хардкоженые резолверы. Android-клиент YouTube и WhatsApp в основном используют системный DNS, но некоторые приложения ходят через Google DNS over QUIC. Если стиринг не работает для приложения — его браузерная версия обычно работает (там DNS через роутер).
 

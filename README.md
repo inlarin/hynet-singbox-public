@@ -82,6 +82,33 @@ cannot run containers at all — per the docs the Container package exists only 
 | `ROTATIONS_BEFORE_FORCE_SWEEP` | `3` | Consecutive `select.now` rotations without success before a forced full sweep. |
 | `STATE_DIR` / `PROBE_PORTS` | `/tmp/healthcheck` / `/tmp/probe_ports.json` | Healthcheck state paths on tmpfs. Telegram uses the general `select` pool; no dedicated HY2 outbound is injected. |
 
+## MikroTik Service Manager desktop app
+
+A standalone Tkinter desktop application for selective VPN routing on MikroTik. KN_GUI remains the separate Keenetic application.
+
+On Windows, run `MikroTik Services.cmd` or execute:
+
+```bash
+python scripts/mikrotik_service_manager.py
+```
+
+Features:
+
+- all 119 KN_GUI catalog services, grouped by category;
+- checkboxes, search, filters, and bulk selection of visible services;
+- FQDN, CIDR, DNS FWD, and upstream source details;
+- selection saved to `config/services.txt`;
+- read-only exports through the existing `tools/rsh.py` (`F5`) or imported from two files;
+- `matches`, `add`, `change`, and `remove` states with a detailed diff;
+- full RSC and diff-only script export;
+- small diff application through `rsh.py --safe` after confirmation, with `/export file=...` created on the router first.
+
+Router application requires `tools/rsh.py` from the main project. Without it, service selection, catalog browsing, export import, and script generation work fully offline. The app never asks for or stores passwords.
+
+A single Safe Mode diff is limited to 80 commands to stay below the RouterOS command buffer. Save larger diffs and apply them in small CLI batches. After a successful apply, the app reads the router state again.
+
+The `fqdn_extra` and `ipv4_cidr_extra` fields contain reviewed local additions, kept separate from KN_GUI source lists. `dns_a_overrides` defines reviewed `domain: IPv4` DNS answers for IPv6-only sites; the generator also creates a managed `/32` address-list entry. The app does not fetch upstream lists automatically.
+
 ## RouterOS setup
 
 The container terminates the proxy tunnel on its own TUN. RouterOS routes selected traffic to the container's veth IP as a next-hop; the container kernel forwards into the TUN, sing-box egresses out via the veth back through ROS WAN.
@@ -211,6 +238,38 @@ Use `restart-policy=on-failure`, `restart-max-count=5`, `restart-interval=5m` an
 
 Two complementary mechanisms, both populating the same `address-list=hynet`:
 
+#### Managed service catalog (recommended)
+
+Select services in `config/services.txt`: one service per line. Comment out a line with `#` to disable it. Reviewed FQDNs, CIDRs, and DNS roots live in `config/services.json`. Its `upstream` fields are informational (`review-only`): external lists are never fetched or applied automatically.
+
+```bash
+# Show available services; * means selected.
+python scripts/generate_routeros_services.py list
+
+# Generate the full idempotent script for a new installation.
+python scripts/generate_routeros_services.py generate --output scripts/routeros-services.rsc
+```
+
+For an existing router, save two read-only exports into the ignored `.local/` directory:
+
+```routeros
+/ip firewall address-list export terse where comment~"hynet:"
+/ip dns static export terse where comment~"hynet:"
+```
+
+Pass both files to the generator. It prints a change summary and writes only the required additions and removals:
+
+```bash
+python scripts/generate_routeros_services.py diff \
+    --current .local/rb4011-address-list.rsc \
+    --current .local/rb4011-dns-static.rsc \
+    --output .local/rb4011-services-diff.rsc
+```
+
+The diff never connects to or modifies the router. Disabling a service removes only its managed static entries and FWD rules. Dynamic `created for …` entries, the `speed.cloudflare.com` healthcheck entry, and entries with unrelated comments are preserved. The full script only adds missing entries; use the diff to remove disabled services. Review and apply the diff in Safe Mode.
+
+KN_GUI's ~300-entry limit applies to Keenetic `object-group fqdn`, not RouterOS `address-list`; there is no need to split `hynet` by service.
+
 #### 3a. Static FQDN / CIDR entries
 
 For services with stable infrastructure — apex domains that have an A record, plus raw-IP services like Telegram MTProto. RouterOS accepts DNS names directly in `/ip firewall address-list` and resolves them periodically (per [Address-lists docs](https://help.mikrotik.com/docs/spaces/ROS/pages/130220135/Address-lists), the `address` field accepts `DNS Name | IP address/netmask | IP-IP`).
@@ -271,7 +330,7 @@ Solution: `/ip dns static type=FWD` entries with regex matching subdomains AND `
 
 `<upstream-DNS>` — use whatever your router itself uses (visible in `/ip dns print`, `servers=` field). **Do not** use `1.1.1.1` / `8.8.8.8` directly here — pick one of the resolvers your provider routes you to or your own. Avoid the router's own LAN IP (creates a forwarding loop).
 
-> **regex vs `match-subdomain=yes`** — both work for catching subdomains, but regex is preferred here because it can *exclude the apex* (`.*\.X\.com$` requires a leading `<something>.`, won't match bare `X.com`). The apex has no A record, so matching it just produces NXDOMAIN responses that some clients cache and use to fail-fast — bad. Per [DNS docs](https://help.mikrotik.com/docs/spaces/ROS/pages/37748767/DNS) regex matching is "significantly slower than plain text entries" — fine for ~10 rules, watch CPU if you scale to 50+.
+> **regex vs `match-subdomain=yes`** — the generator uses exact `name` + `match-subdomain=yes`: this is the verified RB4011 configuration and the faster plain-text match. Regex remains a manual option when the apex must be excluded or only a narrow subdomain class should match. Per [DNS docs](https://help.mikrotik.com/docs/spaces/ROS/pages/37748767/DNS) regex matching is "significantly slower than plain text entries" — watch CPU as the number of regex rules grows.
 
 > **Caveat: native mobile apps may bypass the router's DNS** via DoH or hardcoded resolvers. The Android YouTube and WhatsApp apps mostly use system DNS, but some apps use Google's own DNS over QUIC. If steering doesn't work for an app, browser-mode usually does (and its DNS goes through the router).
 
