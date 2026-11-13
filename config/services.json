@@ -1,0 +1,2640 @@
+{
+  "schema_version": 1,
+  "catalog_version": "2.0.2",
+  "upstream_policy": "review-only",
+  "dns_forward_to": "77.88.8.8",
+  "healthcheck_fqdn": "speed.cloudflare.com",
+  "services": [
+    {
+      "id": "claude",
+      "name": "Claude / Anthropic",
+      "category": "AI",
+      "description": "Claude.ai, Anthropic API, Console. CDN-fronted (Cloudflare).",
+      "fqdn": [
+        "claude.ai",
+        "api.anthropic.com",
+        "console.anthropic.com",
+        "claudeusercontent.com",
+        "www.claude.ai",
+        "cdn.claude.ai",
+        "assets.claude.ai",
+        "anthropic.com",
+        "www.anthropic.com",
+        "docs.anthropic.com",
+        "support.anthropic.com",
+        "status.anthropic.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/anthropic"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "cohere",
+      "name": "Cohere",
+      "category": "AI",
+      "description": "Cohere LLM API + Coral.",
+      "fqdn": [
+        "cohere.com",
+        "cohere.ai",
+        "api.cohere.com",
+        "api.cohere.ai",
+        "dashboard.cohere.com",
+        "coral.cohere.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "category": "AI",
+      "description": "DeepSeek LLM and reasoning models, API.",
+      "fqdn": [
+        "deepseek.com",
+        "api.deepseek.com",
+        "chat.deepseek.com",
+        "cdn.deepseek.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "copilot_gh",
+      "name": "GitHub Copilot",
+      "category": "AI",
+      "description": "IDE/editor endpoints for GitHub Copilot (separate from github.com).",
+      "fqdn": [
+        "api.githubcopilot.com",
+        "copilot-proxy.githubusercontent.com",
+        "copilot-telemetry.githubusercontent.com",
+        "api.individual.githubcopilot.com",
+        "api.business.githubcopilot.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "gemini",
+      "name": "Google Gemini / AI Studio",
+      "category": "AI",
+      "description": "Gemini chat, AI Studio, Google AI SDK.",
+      "fqdn": [
+        "gemini.google.com",
+        "aistudio.google.com",
+        "ai.google.dev",
+        "generativelanguage.googleapis.com",
+        "alkalimakersuite-pa.clients6.google.com",
+        "makersuite.google.com",
+        "aiplatform.googleapis.com",
+        "ai.dev",
+        "apis.google.com",
+        "ogs.google.com",
+        "waa-pa.clients6.google.com",
+        "jules.google.com",
+        "notebooklm.google.com",
+        "labs.google"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "grok",
+      "name": "Grok (xAI)",
+      "category": "AI",
+      "description": "Grok LLM by xAI, integrated into X.",
+      "fqdn": [
+        "grok.com",
+        "x.ai",
+        "api.x.ai",
+        "console.x.ai"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "huggingface",
+      "name": "Hugging Face",
+      "category": "AI",
+      "description": "Hugging Face Hub, Spaces, Inference API.",
+      "fqdn": [
+        "huggingface.co",
+        "hf.co",
+        "cdn-lfs.huggingface.co",
+        "cas-bridge.xethub.hf.co",
+        "huggingface-assets.s3.amazonaws.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/huggingface"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "kagi",
+      "name": "Kagi Search",
+      "category": "AI",
+      "description": "Kagi search + Assistant.",
+      "fqdn": [
+        "kagi.com",
+        "assistant.kagi.com",
+        "kagifeedback.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "copilot_ms",
+      "name": "Microsoft Copilot",
+      "category": "AI",
+      "description": "Copilot consumer + Bing backend (no www.bing.com).",
+      "fqdn": [
+        "copilot.microsoft.com",
+        "sydney.bing.com",
+        "edgeservices.bing.com",
+        "th.bing.com",
+        "r.bing.com",
+        "designer.microsoft.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "mistral",
+      "name": "Mistral AI",
+      "category": "AI",
+      "description": "Mistral LLM chat + API.",
+      "fqdn": [
+        "mistral.ai",
+        "chat.mistral.ai",
+        "console.mistral.ai",
+        "api.mistral.ai",
+        "docs.mistral.ai"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "perplexity",
+      "name": "Perplexity AI",
+      "category": "AI",
+      "description": "Perplexity chat/search.",
+      "fqdn": [
+        "perplexity.ai",
+        "www.perplexity.ai",
+        "api.perplexity.ai",
+        "pplx-res.cloudinary.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "replicate",
+      "name": "Replicate",
+      "category": "AI",
+      "description": "Replicate model hosting.",
+      "fqdn": [
+        "replicate.com",
+        "api.replicate.com",
+        "replicate.delivery"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "bbc",
+      "name": "BBC",
+      "category": "Content",
+      "description": "BBC News + iPlayer (partial geo).",
+      "fqdn": [
+        "bbc.com",
+        "bbc.co.uk",
+        "bbci.co.uk",
+        "bbcimg.co.uk"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "medium",
+      "name": "Medium",
+      "category": "Content",
+      "description": "Medium articles.",
+      "fqdn": [
+        "medium.com",
+        "www.medium.com",
+        "cdn-images-1.medium.com",
+        "miro.medium.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/medium"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "bitbucket",
+      "name": "Bitbucket",
+      "category": "Dev",
+      "description": "Atlassian Bitbucket.",
+      "fqdn": [
+        "bitbucket.org",
+        "api.bitbucket.org",
+        "bitbucket.io"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/bitbucket"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "cloudflare_dash",
+      "name": "Cloudflare Dashboard",
+      "category": "Dev",
+      "description": "Cloudflare dashboard + API (the site itself).",
+      "fqdn": [
+        "cloudflare.com",
+        "www.cloudflare.com",
+        "dash.cloudflare.com",
+        "api.cloudflare.com",
+        "developers.cloudflare.com"
+      ],
+      "ipv4_cidr": [],
+      "ipv4_providers": [
+        "cloudflare"
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor AI",
+      "category": "Dev",
+      "description": "AI-powered code editor (fork of VS Code).",
+      "fqdn": [
+        "cursor.com",
+        "cursor.sh",
+        "api.cursor.sh",
+        "api2.cursor.sh",
+        "download.cursor.sh"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "dockerhub",
+      "name": "Docker Hub",
+      "category": "Dev",
+      "description": "Docker Hub registry + auth.",
+      "fqdn": [
+        "docker.com",
+        "hub.docker.com",
+        "www.docker.com",
+        "registry-1.docker.io",
+        "auth.docker.io",
+        "production.cloudflare.docker.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/docker"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "github",
+      "name": "GitHub / EdgeTX Buddy",
+      "category": "Dev",
+      "description": "GitHub web + Git + Actions.",
+      "fqdn": [
+        "github.com",
+        "www.github.com",
+        "githubusercontent.com",
+        "githubassets.com",
+        "api.github.com",
+        "codeload.github.com",
+        "objects.githubusercontent.com",
+        "release-assets.githubusercontent.com",
+        "raw.githubusercontent.com",
+        "cloudbuild.edgetx.org"
+      ],
+      "ipv4_cidr": [],
+      "ipv4_providers": [
+        "github"
+      ],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/github"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "gitlab",
+      "name": "GitLab",
+      "category": "Dev",
+      "description": "GitLab hosted.",
+      "fqdn": [
+        "gitlab.com",
+        "www.gitlab.com",
+        "about.gitlab.com",
+        "gitlab-static.net",
+        "assets.gitlab-static.net"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/gitlab"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "hashicorp",
+      "name": "HashiCorp",
+      "category": "Dev",
+      "description": "Terraform Registry, Vault, Consul, releases.",
+      "fqdn": [
+        "hashicorp.com",
+        "www.hashicorp.com",
+        "releases.hashicorp.com",
+        "registry.terraform.io"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/hashicorp"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "python_pypi",
+      "name": "Python / PyPI",
+      "category": "Dev",
+      "description": "pip install, pypi.org (often DPI-throttled in RU).",
+      "fqdn": [
+        "pypi.org",
+        "www.pypi.org",
+        "pythonhosted.org",
+        "files.pythonhosted.org",
+        "python.org",
+        "www.python.org"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/python"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "replit",
+      "name": "Replit",
+      "category": "Dev",
+      "description": "Online IDE and collaborative coding platform.",
+      "fqdn": [
+        "replit.com",
+        "repl.co",
+        "repl.it",
+        "replitusercontent.com",
+        "replit.dev"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "stackoverflow",
+      "name": "Stack Overflow",
+      "category": "Dev",
+      "description": "Stack Overflow Q&A and the Stack Exchange network.",
+      "fqdn": [
+        "stackoverflow.com",
+        "stackexchange.com",
+        "sstatic.net",
+        "serverfault.com",
+        "superuser.com",
+        "askubuntu.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/stackoverflow"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "vpngate_net",
+      "name": "VPN Gate (vpngate.net)",
+      "category": "Dev",
+      "description": "SoftEther VPN Gate academic relay service (University of Tsukuba). Usually inaccessible from RU without VPN — route through the tunnel so the app can fetch the server list.",
+      "fqdn": [
+        "vpngate.net",
+        "www.vpngate.net"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "windsurf",
+      "name": "Windsurf (Codeium)",
+      "category": "Dev",
+      "description": "AI IDE by Codeium, Supercomplete, chat-powered coding.",
+      "fqdn": [
+        "codeium.com",
+        "windsurf.com",
+        "api.codeium.com",
+        "server.codeium.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "npm",
+      "name": "npm registry",
+      "category": "Dev",
+      "description": "npm packages, Node.js.",
+      "fqdn": [
+        "npmjs.com",
+        "www.npmjs.com",
+        "registry.npmjs.org",
+        "nodejs.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "blizzard",
+      "name": "Blizzard / Battle.net",
+      "category": "Gaming",
+      "description": "Battle.net, WoW, Overwatch.",
+      "fqdn": [
+        "battle.net",
+        "battlenet.com.cn",
+        "blizzard.com",
+        "blizzardcdn.com",
+        "worldofwarcraft.com",
+        "overwatch.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/blizzard"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "epic_games",
+      "name": "Epic Games",
+      "category": "Gaming",
+      "description": "Epic Games Store, launcher, online.",
+      "fqdn": [
+        "epicgames.com",
+        "www.epicgames.com",
+        "store.epicgames.com",
+        "epicgames.dev",
+        "unrealengine.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/epicgames"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "riot",
+      "name": "Riot Games",
+      "category": "Gaming",
+      "description": "Riot client, League of Legends, Valorant.",
+      "fqdn": [
+        "riotgames.com",
+        "www.riotgames.com",
+        "leagueoflegends.com",
+        "playvalorant.com",
+        "lolstatic-a.akamaihd.net"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "steam",
+      "name": "Steam",
+      "category": "Gaming",
+      "description": "Steam store + community + CDN.",
+      "fqdn": [
+        "steampowered.com",
+        "steamcommunity.com",
+        "steamstatic.com",
+        "steamcontent.com",
+        "steamgames.com",
+        "steamusercontent.com",
+        "steamchat.com",
+        "valvesoftware.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/steam"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "expresslrs",
+      "name": "ExpressLRS Configurator",
+      "category": "FPV",
+      "description": "Десктоп-конфигуратор ExpressLRS: выбор прошивки, облачный флэш (BinaryFlashingStrategy), git clone репозиториев ExpressLRS и Backpack. Не включает домены PlatformIO (локальная сборка из исходников).",
+      "fqdn": [
+        "api.github.com",
+        "github.com",
+        "codeload.github.com",
+        "raw.githubusercontent.com",
+        "objects.githubusercontent.com",
+        "artifactory.expresslrs.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "betaflight",
+      "name": "Betaflight Configurator",
+      "category": "FPV",
+      "description": "Web-конфигуратор Betaflight: прошивка, настройка и тюнинг полётного контроллера.",
+      "fqdn": [
+        "app.betaflight.com",
+        "build.betaflight.com",
+        "analytics.betaflight.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "team_blacksheep",
+      "name": "Team BlackSheep (TBS)",
+      "category": "FPV",
+      "description": "TBS: радиолинки Crossfire/Tracer, TBS Agent, прошивки/конфигураторы и магазин.",
+      "fqdn": [
+        "team-blacksheep.com",
+        "www.team-blacksheep.com",
+        "agent.blacksheep.com.sg"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "discord",
+      "name": "Discord",
+      "category": "Messaging",
+      "description": "Discord chat + voice + CDN.",
+      "fqdn": [
+        "discord.com",
+        "discordapp.com",
+        "discord.gg",
+        "discord.media",
+        "discordapp.net",
+        "cdn.discordapp.com",
+        "discord-attachments-uploads-prd.storage.googleapis.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/discord"
+        },
+        {
+          "type": "plain",
+          "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/discord.lst"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "discord.com",
+        "discord.gg",
+        "discord.media",
+        "discordapp.com",
+        "discordapp.net"
+      ]
+    },
+    {
+      "id": "signal",
+      "name": "Signal",
+      "category": "Messaging",
+      "description": "Signal messenger.",
+      "fqdn": [
+        "signal.org",
+        "www.signal.org",
+        "textsecure-service.whispersystems.org",
+        "storage.signal.org",
+        "cdn.signal.org",
+        "cdn2.signal.org",
+        "updates2.signal.org"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/signal"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "slack",
+      "name": "Slack",
+      "category": "Messaging",
+      "description": "Slack workspace + mobile.",
+      "fqdn": [
+        "slack.com",
+        "slack-edge.com",
+        "slack-files.com",
+        "slack-imgs.com",
+        "slack-msgs.com",
+        "slackb.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/slack"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "telegram",
+      "name": "Telegram",
+      "category": "Messaging",
+      "description": "Messenger. Clients connect to DC by IP; CIDRs matter.",
+      "fqdn": [
+        "t.me",
+        "telegram.org",
+        "telegram.me",
+        "telesco.pe",
+        "telegra.ph",
+        "tdesktop.com",
+        "web.telegram.org",
+        "venus.web.telegram.org",
+        "aurora.web.telegram.org",
+        "vesta.web.telegram.org",
+        "flora.web.telegram.org",
+        "pluto.web.telegram.org",
+        "api.telegram.org",
+        "core.telegram.org",
+        "my.telegram.org",
+        "updates.tdesktop.com",
+        "desktop.telegram.org"
+      ],
+      "ipv4_cidr": [],
+      "ipv4_providers": [
+        "telegram"
+      ],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/telegram"
+        },
+        {
+          "type": "plain",
+          "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/telegram.lst"
+        }
+      ],
+      "fqdn_extra": [
+        "cdn-telegram.org",
+        "comments.app",
+        "contest.com",
+        "fragment.com",
+        "graph.org",
+        "quiz.directory",
+        "telega.one",
+        "telegram.dog",
+        "telegram.space",
+        "tg.dev",
+        "ton.org",
+        "tx.me",
+        "usercontent.dev"
+      ],
+      "ipv4_cidr_extra": [
+        "149.154.160.0/20",
+        "185.76.151.0/24",
+        "91.105.192.0/23",
+        "91.108.12.0/22",
+        "91.108.16.0/22",
+        "91.108.20.0/22",
+        "91.108.4.0/22",
+        "91.108.56.0/22",
+        "91.108.8.0/22"
+      ],
+      "dns_subdomains": [
+        "cdn-telegram.org",
+        "t.me",
+        "tdesktop.com",
+        "telegram.me",
+        "telegram.org",
+        "telesco.pe"
+      ]
+    },
+    {
+      "id": "viber",
+      "name": "Viber",
+      "category": "Messaging",
+      "description": "Messenger and VoIP by Rakuten.",
+      "fqdn": [
+        "viber.com",
+        "www.viber.com",
+        "download.viber.com",
+        "share.viber.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "viber.com"
+      ]
+    },
+    {
+      "id": "whatsapp",
+      "name": "WhatsApp",
+      "category": "Messaging",
+      "description": "WhatsApp web + mobile.",
+      "fqdn": [
+        "whatsapp.com",
+        "www.whatsapp.com",
+        "web.whatsapp.com",
+        "whatsapp.net",
+        "g.whatsapp.net",
+        "mmg.whatsapp.net"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/whatsapp"
+        }
+      ],
+      "fqdn_extra": [
+        "wa.me",
+        "whatsapp-plus.info",
+        "whatsapp-plus.me",
+        "whatsapp-plus.net",
+        "whatsapp.cc",
+        "whatsapp.info",
+        "whatsapp.org",
+        "whatsapp.tv",
+        "whatsappbrand.com"
+      ],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "whatsapp.com",
+        "whatsapp.net"
+      ]
+    },
+    {
+      "id": "apple_music",
+      "name": "Apple Music",
+      "category": "Music",
+      "description": "Apple Music streaming.",
+      "fqdn": [
+        "music.apple.com",
+        "itunes.apple.com",
+        "mzstatic.com",
+        "aod.itunes.apple.com",
+        "audio-ssl.itunes.apple.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/apple"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "deezer",
+      "name": "Deezer",
+      "category": "Music",
+      "description": "Deezer music.",
+      "fqdn": [
+        "deezer.com",
+        "www.deezer.com",
+        "api.deezer.com",
+        "dzcdn.net",
+        "e-cdns-preview-a.dzcdn.net"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/deezer"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "soundcloud",
+      "name": "SoundCloud",
+      "category": "Music",
+      "description": "SoundCloud music.",
+      "fqdn": [
+        "soundcloud.com",
+        "api.soundcloud.com",
+        "api-v2.soundcloud.com",
+        "sndcdn.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/soundcloud"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "category": "Music",
+      "description": "Spotify web, desktop, mobile.",
+      "fqdn": [
+        "spotify.com",
+        "www.spotify.com",
+        "open.spotify.com",
+        "scdn.co",
+        "spotifycdn.com",
+        "spotify.map.fastly.net",
+        "pscdn.co",
+        "audio-ak-spotify-com.akamaized.net"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/spotify"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "tidal",
+      "name": "Tidal",
+      "category": "Music",
+      "description": "Tidal music streaming.",
+      "fqdn": [
+        "tidal.com",
+        "listen.tidal.com",
+        "api.tidal.com",
+        "tidal-api.com",
+        "resources.tidal.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "paypal",
+      "name": "PayPal",
+      "category": "Payment",
+      "description": "PayPal consumer + checkout.",
+      "fqdn": [
+        "paypal.com",
+        "www.paypal.com",
+        "paypalobjects.com",
+        "paypal.me"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/paypal"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe",
+      "category": "Payment",
+      "description": "Stripe dashboard + API.",
+      "fqdn": [
+        "stripe.com",
+        "dashboard.stripe.com",
+        "api.stripe.com",
+        "checkout.stripe.com",
+        "js.stripe.com",
+        "m.stripe.network"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/stripe"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "canva",
+      "name": "Canva",
+      "category": "Productivity",
+      "description": "Canva design tool.",
+      "fqdn": [
+        "canva.com",
+        "www.canva.com",
+        "canva.cn",
+        "static.canva.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/canva"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "dropbox",
+      "name": "Dropbox",
+      "category": "Productivity",
+      "description": "Dropbox file storage.",
+      "fqdn": [
+        "dropbox.com",
+        "www.dropbox.com",
+        "dropboxusercontent.com",
+        "dropboxapi.com",
+        "dropboxstatic.com",
+        "dl.dropboxusercontent.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/dropbox"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "figma",
+      "name": "Figma",
+      "category": "Productivity",
+      "description": "Figma design collaboration.",
+      "fqdn": [
+        "figma.com",
+        "www.figma.com",
+        "static.figma.com",
+        "s3-alpha-sig.figma.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/figma"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "category": "Productivity",
+      "description": "Google email service.",
+      "fqdn": [
+        "mail.google.com",
+        "gmail.com",
+        "googlemail.com",
+        "inbox.google.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "gdrive",
+      "name": "Google Drive",
+      "category": "Productivity",
+      "description": "Google Drive, Docs, Sheets, Slides.",
+      "fqdn": [
+        "drive.google.com",
+        "docs.google.com",
+        "sheets.google.com",
+        "slides.google.com",
+        "driveusercontent.google.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "meet",
+      "name": "Google Meet",
+      "category": "Productivity",
+      "description": "Video conferencing by Google.",
+      "fqdn": [
+        "meet.google.com",
+        "meetings.google.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "teams",
+      "name": "Microsoft Teams",
+      "category": "Productivity",
+      "description": "Microsoft Teams chat, calls, meetings. Part of M365.",
+      "fqdn": [
+        "teams.microsoft.com",
+        "teams.live.com",
+        "statics.teams.cdn.office.net"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "miro",
+      "name": "Miro",
+      "category": "Productivity",
+      "description": "Miro whiteboard.",
+      "fqdn": [
+        "miro.com",
+        "realtimeboard.com",
+        "api.miro.com",
+        "miro-api.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "notion",
+      "name": "Notion",
+      "category": "Productivity",
+      "description": "Notion workspace.",
+      "fqdn": [
+        "notion.so",
+        "www.notion.so",
+        "notion.site",
+        "api.notion.com",
+        "cdn.notion-static.com",
+        "notion.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/notion"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "onedrive",
+      "name": "OneDrive",
+      "category": "Productivity",
+      "description": "Microsoft cloud storage (personal + business).",
+      "fqdn": [
+        "onedrive.com",
+        "onedrive.live.com",
+        "skyapi.onedrive.live.com",
+        "1drv.com",
+        "1drv.ms",
+        "sharepoint.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "outlook",
+      "name": "Outlook.com / Hotmail",
+      "category": "Productivity",
+      "description": "Microsoft webmail (Outlook.com, Hotmail, Live Mail).",
+      "fqdn": [
+        "outlook.com",
+        "outlook.live.com",
+        "outlook.office365.com",
+        "hotmail.com",
+        "live.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "proton",
+      "name": "Proton Mail / VPN / Drive",
+      "category": "Productivity",
+      "description": "Proton privacy suite: Mail, VPN, Drive, Calendar, Pass.",
+      "fqdn": [
+        "proton.me",
+        "protonmail.com",
+        "protonvpn.com",
+        "protonmail.ch",
+        "pm.me",
+        "mail.proton.me",
+        "drive.proton.me",
+        "calendar.proton.me"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/proton"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "zoom",
+      "name": "Zoom",
+      "category": "Productivity",
+      "description": "Video conferencing, webinars, Zoom Phone.",
+      "fqdn": [
+        "zoom.us",
+        "zoom.com",
+        "zoomgov.com",
+        "zoomcdn.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/zoom"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "icloud",
+      "name": "iCloud / Apple Services",
+      "category": "Productivity",
+      "description": "iCloud, App Store, Apple Music CDN, iMessage, FaceTime.",
+      "fqdn": [
+        "icloud.com",
+        "apple.com",
+        "cdn-apple.com",
+        "icloud-content.com",
+        "me.com",
+        "apple-dns.net"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/apple"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "meta",
+      "name": "Facebook / Instagram (Meta)",
+      "category": "Social",
+      "description": "Facebook, Instagram, Messenger, Threads, Meta. Upstream v2fly 'facebook' list is intentionally NOT wired — it's ~400 entries of typosquats and brand-protection domains and does not cover Instagram/Threads/Messenger.",
+      "fqdn": [
+        "facebook.com",
+        "www.facebook.com",
+        "m.facebook.com",
+        "instagram.com",
+        "www.instagram.com",
+        "threads.net",
+        "www.threads.net",
+        "messenger.com",
+        "www.messenger.com",
+        "fbcdn.net",
+        "cdninstagram.com",
+        "fb.com",
+        "meta.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/facebook"
+        },
+        {
+          "type": "plain",
+          "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/meta.lst"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "cdninstagram.com",
+        "facebook.com",
+        "fbcdn.net",
+        "instagram.com",
+        "messenger.com",
+        "threads.net"
+      ]
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "category": "Social",
+      "description": "LinkedIn web + mobile.",
+      "fqdn": [
+        "linkedin.com",
+        "www.linkedin.com",
+        "licdn.com",
+        "media.licdn.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/linkedin"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "pinterest",
+      "name": "Pinterest",
+      "category": "Social",
+      "description": "Pinterest social.",
+      "fqdn": [
+        "pinterest.com",
+        "www.pinterest.com",
+        "pinimg.com",
+        "pinterest.ru"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/pinterest"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "reddit",
+      "name": "Reddit",
+      "category": "Social",
+      "description": "Reddit web + mobile (blocked in RU).",
+      "fqdn": [
+        "reddit.com",
+        "www.reddit.com",
+        "redd.it",
+        "redditmedia.com",
+        "redditstatic.com",
+        "i.redd.it",
+        "v.redd.it",
+        "preview.redd.it"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/reddit"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "tiktok",
+      "name": "TikTok",
+      "category": "Social",
+      "description": "TikTok web + mobile.",
+      "fqdn": [
+        "tiktok.com",
+        "www.tiktok.com",
+        "tiktokcdn.com",
+        "muscdn.com",
+        "tiktokv.com",
+        "byteoversea.com",
+        "ttwstatic.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/tiktok"
+        },
+        {
+          "type": "plain",
+          "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/tiktok.lst"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "x_twitter",
+      "name": "X (Twitter)",
+      "category": "Social",
+      "description": "X/Twitter web and mobile.",
+      "fqdn": [
+        "x.com",
+        "twitter.com",
+        "www.twitter.com",
+        "twimg.com",
+        "video.twimg.com",
+        "t.co",
+        "abs.twimg.com",
+        "pbs.twimg.com",
+        "api.twitter.com",
+        "mobile.twitter.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/twitter"
+        },
+        {
+          "type": "plain",
+          "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/twitter.lst"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "disney_plus",
+      "name": "Disney+",
+      "category": "Video",
+      "description": "Disney+ streaming.",
+      "fqdn": [
+        "disneyplus.com",
+        "disney-plus.net",
+        "disney.io",
+        "bamgrid.com",
+        "disneystreaming.com",
+        "cdn.registerdisney.go.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/disney"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "hbo_max",
+      "name": "HBO Max",
+      "category": "Video",
+      "description": "Max (HBO Max).",
+      "fqdn": [
+        "max.com",
+        "hbomax.com",
+        "hbomaxcdn.com",
+        "hbo.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/hbo"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "netflix",
+      "name": "Netflix",
+      "category": "Video",
+      "description": "Netflix streaming + CDN.",
+      "fqdn": [
+        "netflix.com",
+        "www.netflix.com",
+        "nflxvideo.net",
+        "nflximg.net",
+        "nflximg.com",
+        "nflxso.net",
+        "nflxext.com",
+        "netflixdnstest0.com",
+        "netflixdnstest1.com",
+        "netflixdnstest2.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/netflix"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "prime_video",
+      "name": "Prime Video",
+      "category": "Video",
+      "description": "Amazon Prime Video.",
+      "fqdn": [
+        "primevideo.com",
+        "amazonvideo.com",
+        "aiv-cdn.net",
+        "atv-ps.amazon.com",
+        "pv-cdn.net",
+        "aiv-delivery.net"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/amazon"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "twitch",
+      "name": "Twitch",
+      "category": "Video",
+      "description": "Twitch streaming.",
+      "fqdn": [
+        "twitch.tv",
+        "www.twitch.tv",
+        "static-cdn.jtvnw.net",
+        "twitchcdn.net",
+        "ttvnw.net"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/twitch"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "vimeo",
+      "name": "Vimeo",
+      "category": "Video",
+      "description": "Vimeo video hosting.",
+      "fqdn": [
+        "vimeo.com",
+        "player.vimeo.com",
+        "vimeocdn.com",
+        "vod-adaptive.akamaized.net"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/vimeo"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "category": "Video",
+      "description": "Browser + mobile apps. Requires clients to use router DNS.",
+      "fqdn": [
+        "youtube.com",
+        "youtu.be",
+        "ytimg.com",
+        "googlevideo.com",
+        "youtubei.googleapis.com",
+        "ggpht.com",
+        "googleusercontent.com"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "v2fly",
+          "url": "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/youtube"
+        },
+        {
+          "type": "plain",
+          "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/youtube.lst"
+        }
+      ],
+      "fqdn_extra": [
+        "accounts.google.com",
+        "apis.google.com",
+        "client-channel.google.com",
+        "clients4.google.com",
+        "clients6.google.com",
+        "fonts.googleapis.com",
+        "fonts.gstatic.com",
+        "jnn-pa.googleapis.com",
+        "play.googleapis.com",
+        "support.google.com",
+        "wide-youtube.l.google.com",
+        "withyoutube.com",
+        "www.google.com",
+        "www.google.ru",
+        "www.gstatic.com",
+        "www.youtube.com",
+        "youtube-nocookie.com",
+        "youtube-ui.l.google.com",
+        "youtube.ae",
+        "youtube.al",
+        "youtube.am",
+        "youtube.at",
+        "youtube.az",
+        "youtube.ba",
+        "youtube.be",
+        "youtube.bg",
+        "youtube.bh",
+        "youtube.bo",
+        "youtube.by",
+        "youtube.ca",
+        "youtube.cat",
+        "youtube.ch",
+        "youtube.cl",
+        "youtube.co",
+        "youtube.co.ae",
+        "youtube.co.at",
+        "youtube.co.cr",
+        "youtube.co.hu",
+        "youtube.co.id",
+        "youtube.co.il",
+        "youtube.co.in",
+        "youtube.co.jp",
+        "youtube.co.ke",
+        "youtube.co.kr",
+        "youtube.co.ma",
+        "youtube.co.nz",
+        "youtube.co.th",
+        "youtube.co.tz",
+        "youtube.co.ug",
+        "youtube.co.uk",
+        "youtube.co.ve",
+        "youtube.co.za",
+        "youtube.co.zw",
+        "youtube.com.ar",
+        "youtube.com.au",
+        "youtube.com.az",
+        "youtube.com.bd",
+        "youtube.com.bh",
+        "youtube.com.bo",
+        "youtube.com.br",
+        "youtube.com.by",
+        "youtube.com.co",
+        "youtube.com.do",
+        "youtube.com.ec",
+        "youtube.com.ee",
+        "youtube.com.eg",
+        "youtube.com.es",
+        "youtube.com.gh",
+        "youtube.com.gr",
+        "youtube.com.gt",
+        "youtube.com.hk",
+        "youtube.com.hn",
+        "youtube.com.hr",
+        "youtube.com.jm",
+        "youtube.com.jo",
+        "youtube.com.kw",
+        "youtube.com.lb",
+        "youtube.com.lv",
+        "youtube.com.ly",
+        "youtube.com.mk",
+        "youtube.com.mt",
+        "youtube.com.mx",
+        "youtube.com.my",
+        "youtube.com.ng",
+        "youtube.com.ni",
+        "youtube.com.om",
+        "youtube.com.pa",
+        "youtube.com.pe",
+        "youtube.com.ph",
+        "youtube.com.pk",
+        "youtube.com.pt",
+        "youtube.com.py",
+        "youtube.com.qa",
+        "youtube.com.ro",
+        "youtube.com.sa",
+        "youtube.com.sg",
+        "youtube.com.sv",
+        "youtube.com.tn",
+        "youtube.com.tr",
+        "youtube.com.tw",
+        "youtube.com.ua",
+        "youtube.com.uy",
+        "youtube.com.ve",
+        "youtube.cr",
+        "youtube.cz",
+        "youtube.de",
+        "youtube.dk",
+        "youtube.ee",
+        "youtube.es",
+        "youtube.fi",
+        "youtube.fr",
+        "youtube.ge",
+        "youtube.googleapis.com",
+        "youtube.gr",
+        "youtube.gt",
+        "youtube.hk",
+        "youtube.hr",
+        "youtube.hu",
+        "youtube.ie",
+        "youtube.in",
+        "youtube.iq",
+        "youtube.is",
+        "youtube.it",
+        "youtube.jo",
+        "youtube.jp",
+        "youtube.kr",
+        "youtube.kz",
+        "youtube.la",
+        "youtube.lk",
+        "youtube.lt",
+        "youtube.lu",
+        "youtube.lv",
+        "youtube.ly",
+        "youtube.ma",
+        "youtube.md",
+        "youtube.me",
+        "youtube.mk",
+        "youtube.mn",
+        "youtube.mx",
+        "youtube.my",
+        "youtube.ng",
+        "youtube.ni",
+        "youtube.nl",
+        "youtube.no",
+        "youtube.pa",
+        "youtube.pe",
+        "youtube.ph",
+        "youtube.pk",
+        "youtube.pl",
+        "youtube.pr",
+        "youtube.pt",
+        "youtube.qa",
+        "youtube.ro",
+        "youtube.rs",
+        "youtube.ru",
+        "youtube.sa",
+        "youtube.se",
+        "youtube.sg",
+        "youtube.si",
+        "youtube.sk",
+        "youtube.sn",
+        "youtube.soy",
+        "youtube.sv",
+        "youtube.tn",
+        "youtube.tv",
+        "youtube.ua",
+        "youtube.ug",
+        "youtube.uy",
+        "youtube.vn",
+        "youtubeeducation.com",
+        "youtubeembeddedplayer.googleapis.com",
+        "youtubefanfest.com",
+        "youtubegaming.com",
+        "youtubego.co.id",
+        "youtubego.co.in",
+        "youtubego.com",
+        "youtubego.com.br",
+        "youtubego.id",
+        "youtubego.in",
+        "youtubei-att.googleapis.com",
+        "youtubekids.com",
+        "youtubemobilesupport.com",
+        "yt-video-upload.l.google.com",
+        "yt.be",
+        "yt3.googleusercontent.com",
+        "ytimg.l.google.com"
+      ],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "accounts.google.com",
+        "apis.google.com",
+        "client-channel.google.com",
+        "clients4.google.com",
+        "clients6.google.com",
+        "fonts.googleapis.com",
+        "fonts.gstatic.com",
+        "ggpht.com",
+        "googleusercontent.com",
+        "googlevideo.com",
+        "play.googleapis.com",
+        "support.google.com",
+        "www.google.com",
+        "www.google.ru",
+        "www.gstatic.com",
+        "youtube.com",
+        "youtube.googleapis.com",
+        "youtubei-att.googleapis.com",
+        "youtubei.googleapis.com",
+        "ytimg.com"
+      ]
+    },
+    {
+      "id": "rutracker",
+      "name": "RuTracker",
+      "category": "Torrents",
+      "description": "Крупнейший русскоязычный торрент-трекер; заблокирован в РФ.",
+      "fqdn": [
+        "rutracker.org",
+        "rutracker.net",
+        "rutracker.cc",
+        "rutracker.wiki",
+        "rutrk.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "rutracker.cc",
+        "rutracker.org",
+        "rutracker.wiki"
+      ]
+    },
+    {
+      "id": "nnmclub",
+      "name": "NNM-Club",
+      "category": "Torrents",
+      "description": "Закрытый торрент-трекер NNM-Club.",
+      "fqdn": [
+        "nnmclub.to",
+        "nnm-club.me",
+        "nnm-club.ws",
+        "nnmstatic.win"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "kinozal",
+      "name": "Kinozal",
+      "category": "Torrents",
+      "description": "Кинозал.ТВ — торренты по фильмам/сериалам.",
+      "fqdn": [
+        "kinozal.tv",
+        "kinozal.guru",
+        "kinozal.me",
+        "kinozaltv.life",
+        "kinozal-tv.appspot.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "rutor",
+      "name": "Rutor",
+      "category": "Torrents",
+      "description": "Открытый торрент-трекер rutor.org.",
+      "fqdn": [
+        "rutor.org",
+        "rutor.info",
+        "rutor.is",
+        "new-rutor.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "x1337",
+      "name": "1337x",
+      "category": "Torrents",
+      "description": "Англоязычный торрент-индекс 1337x.",
+      "fqdn": [
+        "1337x.to",
+        "1337x.st",
+        "1337x.tw",
+        "1337x.is",
+        "x1337x.eu",
+        "x1337x.ws",
+        "x1337x.se"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "thepiratebay",
+      "name": "The Pirate Bay",
+      "category": "Torrents",
+      "description": "Старейший публичный торрент-индекс.",
+      "fqdn": [
+        "thepiratebay.org",
+        "thepiratebay.se",
+        "thepiratebay10.org",
+        "tpb.party",
+        "piratebay.live"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "news_meduza",
+      "name": "Meduza",
+      "category": "News",
+      "description": "Независимое русскоязычное издание (Латвия). Заблокировано в РФ.",
+      "fqdn": [
+        "meduza.io",
+        "support.meduza.io"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "news_dw",
+      "name": "Deutsche Welle",
+      "category": "News",
+      "description": "Немецкая международная телерадиокомпания. Заблокирована в РФ.",
+      "fqdn": [
+        "dw.com",
+        "www.dw.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "news_rferl",
+      "name": "Радио Свобода / RFE/RL",
+      "category": "News",
+      "description": "Радио Свобода, RFE/RL, Настоящее Время. Заблокированы в РФ.",
+      "fqdn": [
+        "svoboda.org",
+        "www.svoboda.org",
+        "rferl.org",
+        "www.rferl.org",
+        "currenttime.tv",
+        "www.currenttime.tv"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "news_holod",
+      "name": "Holod Media",
+      "category": "News",
+      "description": "Независимое издание о жизни в России. Заблокировано в РФ.",
+      "fqdn": [
+        "holod.media",
+        "www.holod.media"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "news_mediazona",
+      "name": "Медиазона",
+      "category": "News",
+      "description": "Издание о судах, тюрьмах, правосудии. Заблокировано в РФ.",
+      "fqdn": [
+        "zona.media",
+        "en.zona.media",
+        "mediazona.ca"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "news_insider",
+      "name": "The Insider",
+      "category": "News",
+      "description": "Расследовательское издание The Insider. Заблокировано в РФ.",
+      "fqdn": [
+        "theins.ru",
+        "www.theins.ru",
+        "theins.press"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "news_novaya",
+      "name": "Новая газета Европа",
+      "category": "News",
+      "description": "Европейское продолжение «Новой газеты». Заблокировано в РФ.",
+      "fqdn": [
+        "novayagazeta.eu",
+        "www.novayagazeta.eu"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "flibusta",
+      "name": "Флибуста",
+      "category": "Books",
+      "description": "Свободная онлайн-библиотека. Заблокирована в РФ.",
+      "fqdn": [
+        "flibusta.is",
+        "flibusta.site",
+        "flibusta.app",
+        "flibusta.club"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "libgen",
+      "name": "Library Genesis",
+      "category": "Books",
+      "description": "LibGen — крупный архив научных книг и статей.",
+      "fqdn": [
+        "libgen.is",
+        "libgen.rs",
+        "libgen.li",
+        "libgen.gs",
+        "libgen.la",
+        "libgen.lc"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "z_library",
+      "name": "Z-Library",
+      "category": "Books",
+      "description": "Z-Library — крупная электронная библиотека книг и статей.",
+      "fqdn": [
+        "z-lib.io",
+        "z-library.sk",
+        "1lib.sk",
+        "singlelogin.re"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "tor_project",
+      "name": "Tor Project",
+      "category": "VPN",
+      "description": "Сайт Tor Project, мосты, snowflake — для скачивания клиента и получения мостов.",
+      "fqdn": [
+        "torproject.org",
+        "www.torproject.org",
+        "blog.torproject.org",
+        "support.torproject.org",
+        "dist.torproject.org",
+        "check.torproject.org",
+        "bridges.torproject.org",
+        "gettor.torproject.org",
+        "snowflake.torproject.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "torproject.org"
+      ]
+    },
+    {
+      "id": "nordvpn",
+      "name": "NordVPN",
+      "category": "VPN",
+      "description": "NordVPN — сайт, API, загрузки клиентов.",
+      "fqdn": [
+        "nordvpn.com",
+        "www.nordvpn.com",
+        "api.nordvpn.com",
+        "downloads.nordcdn.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "expressvpn",
+      "name": "ExpressVPN",
+      "category": "VPN",
+      "description": "ExpressVPN — сайт и загрузки клиентов.",
+      "fqdn": [
+        "expressvpn.com",
+        "www.expressvpn.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "mullvad",
+      "name": "Mullvad VPN",
+      "category": "VPN",
+      "description": "Mullvad VPN — сайт и API. Proton VPN — в Productivity (proton).",
+      "fqdn": [
+        "mullvad.net",
+        "www.mullvad.net",
+        "api.mullvad.net"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "hdrezka",
+      "name": "HDRezka",
+      "category": "Video",
+      "description": "Российский стриминг фильмов и сериалов. Множество зеркал; itdoginfo подтягивает актуальный список.",
+      "fqdn": [
+        "hdrezka.ag",
+        "rezka.ag",
+        "hdrezka.cm",
+        "hdrezka.tv",
+        "hdrezka.me",
+        "hdrezka.fan"
+      ],
+      "ipv4_cidr": [],
+      "upstream": [
+        {
+          "type": "plain",
+          "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/hdrezka.lst"
+        }
+      ],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "ntc_party",
+      "name": "ntc.party",
+      "category": "Other",
+      "description": "ntc.party is IPv6-only in public DNS; IPv4 access uses the verified box.ntc.party address.",
+      "fqdn": [
+        "ntc.party"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [],
+      "dns_a_overrides": {
+        "ntc.party": "130.255.77.28"
+      }
+    },
+    {
+      "id": "edgetx",
+      "name": "EdgeTX",
+      "category": "FPV",
+      "description": "EdgeTX",
+      "fqdn": [
+        "edgetx.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "hackmd",
+      "name": "HackMD",
+      "category": "AI",
+      "description": "HackMD",
+      "fqdn": [
+        "hackmd.io",
+        "www.hackmd.io",
+        "api.hackmd.io",
+        "status.hackmd.io"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "hackmd.io"
+      ]
+    },
+    {
+      "id": "amnezia",
+      "name": "AmneziaVPN",
+      "category": "VPN",
+      "description": "AmneziaVPN",
+      "fqdn": [
+        "amnezia.org",
+        "www.amnezia.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "amnezia.org"
+      ]
+    },
+    {
+      "id": "stripe_com",
+      "name": "Stripe",
+      "category": "Other",
+      "description": "Stripe",
+      "fqdn": [
+        "stripe.com",
+        "invoice.stripe.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "lilygo",
+      "name": "lilygo.cc",
+      "category": "Other",
+      "description": "lilygo.cc",
+      "fqdn": [
+        "lilygo.cc"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "lilygo.cc"
+      ]
+    },
+    {
+      "id": "issabel",
+      "name": "issabel.org",
+      "category": "Other",
+      "description": "issabel.org",
+      "fqdn": [
+        "www.issabel.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "linphone",
+      "name": "Linphone",
+      "category": "Messaging",
+      "description": "Linphone",
+      "fqdn": [
+        "linphone.org",
+        "www.linphone.org",
+        "download.linphone.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "linphone.org"
+      ]
+    },
+    {
+      "id": "silabs",
+      "name": "Silabs",
+      "category": "Other",
+      "description": "Silabs",
+      "fqdn": [
+        "silabs.com",
+        "www.silabs.com",
+        "community.silabs.com",
+        "docs.silabs.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "silabs.com"
+      ]
+    },
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT / OpenAI",
+      "category": "AI",
+      "description": "ChatGPT / OpenAI",
+      "fqdn": [
+        "chatgpt.com",
+        "auth.openai.com",
+        "api.openai.com",
+        "openai.com",
+        "cdn.oaistatic.com",
+        "files.oaiusercontent.com",
+        "platform.openai.com",
+        "oaistatic.com",
+        "oaiusercontent.com",
+        "chat.com",
+        "ios.chat.openai.com",
+        "ai.com",
+        "chatgpt.livekit.cloud",
+        "turn.livekit.cloud",
+        "auth0.openai.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "ai_bench",
+      "name": "AI benchmark/news sites",
+      "category": "AI",
+      "description": "AI benchmark/news sites",
+      "fqdn": [
+        "llm-stats.com",
+        "www.llm-stats.com",
+        "techsy.io",
+        "www.techsy.io",
+        "llmbase.ai",
+        "www.llmbase.ai",
+        "latent.space",
+        "www.latent.space",
+        "digitalapplied.com",
+        "www.digitalapplied.com",
+        "promptquorum.com",
+        "www.promptquorum.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "ardupilot",
+      "name": "ArduPilot (firmware + docs)",
+      "category": "FPV",
+      "description": "ArduPilot (firmware + docs)",
+      "fqdn": [
+        "firmware.ardupilot.org",
+        "ardupilot.org",
+        "www.ardupilot.org"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "ardupilot.org"
+      ]
+    },
+    {
+      "id": "autodesk",
+      "name": "Autodesk",
+      "category": "Productivity",
+      "description": "Autodesk",
+      "fqdn": [
+        "www.autodesk.com",
+        "autodesk.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "esc_configurator",
+      "name": "ESC Configurator",
+      "category": "FPV",
+      "description": "ESC Configurator",
+      "fqdn": [
+        "esc-configurator.com",
+        "www.esc-configurator.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "oscarliang",
+      "name": "oscarliang",
+      "category": "Other",
+      "description": "oscarliang",
+      "fqdn": [
+        "oscarliang.com",
+        "www.oscarliang.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "qgc_terrain",
+      "name": "QGroundControl terrain (Auterion)",
+      "category": "FPV",
+      "description": "QGroundControl terrain (Auterion)",
+      "fqdn": [
+        "terrain-ce.suite.auterion.com",
+        "griffin-service-ce.prod.suite.auterion.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "st_com",
+      "name": "STMicroelectronics",
+      "category": "Dev",
+      "description": "STMicroelectronics",
+      "fqdn": [
+        "st.com",
+        "www.st.com",
+        "sw-center.st.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "forum_ru_board",
+      "name": "forum.ru-board.com",
+      "category": "Other",
+      "description": "forum.ru-board.com",
+      "fqdn": [
+        "forum.ru-board.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "arm_toolchain",
+      "name": "ARM developer (toolchain)",
+      "category": "Dev",
+      "description": "ARM developer (toolchain)",
+      "fqdn": [
+        "developer.arm.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "datasheets",
+      "name": "Chip datasheets (ST/TDK/Bosch/ADI/u-blox)",
+      "category": "Docs",
+      "description": "Chip datasheets (ST/TDK/Bosch/ADI/u-blox)",
+      "fqdn": [
+        "st.com",
+        "www.st.com",
+        "invensense.tdk.com",
+        "tdk.com",
+        "bosch-sensortec.com",
+        "www.bosch-sensortec.com",
+        "analog.com",
+        "www.analog.com",
+        "u-blox.com",
+        "content.u-blox.com",
+        "cdn.sparkfun.com",
+        "courses.cs.washington.edu",
+        "datasheet.lcsc.com",
+        "www.lcsc.com",
+        "media.digikey.com",
+        "datasheet.octopart.com",
+        "wch-ic.com",
+        "www.wch-ic.com",
+        "dl.djicdn.com",
+        "ftdichip.com",
+        "www.ftdichip.com",
+        "storage-us.xtool.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "virustotal",
+      "name": "VirusTotal",
+      "category": "Security",
+      "description": "VirusTotal",
+      "fqdn": [
+        "virustotal.com",
+        "www.virustotal.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "docs_rw",
+      "name": "docs.rw",
+      "category": "Other",
+      "description": "docs.rw",
+      "fqdn": [
+        "docs.rw"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "vpngate",
+      "name": "VPN Gate (SoftEther public relays)",
+      "category": "Network",
+      "description": "VPN Gate (SoftEther public relays)",
+      "fqdn": [
+        "vpngate.net",
+        "www.vpngate.net"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": []
+    },
+    {
+      "id": "ubiquiti",
+      "name": "Ubiquiti (docs, firmware, community)",
+      "category": "Other",
+      "description": "Ubiquiti (ui.com)",
+      "fqdn": [
+        "ui.com",
+        "dl.ubnt.com",
+        "dl.ui.com",
+        "www.ui.com",
+        "community.ui.com",
+        "help.ui.com",
+        "fw-download.ubnt.com",
+        "fw-update.ubnt.com",
+        "fw-download.ui.com"
+      ],
+      "ipv4_cidr": [],
+      "fqdn_extra": [],
+      "ipv4_cidr_extra": [],
+      "dns_subdomains": [
+        "ui.com"
+      ]
+    }
+  ],
+  "source_catalog": {
+    "name": "KN_GUI services.json",
+    "version": "2.8.2",
+    "updated": "2026-11-13"
+  }
+}

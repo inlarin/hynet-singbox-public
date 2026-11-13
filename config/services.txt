@@ -1,0 +1,27 @@
+# Enabled services: one id per line. Managed by MikroTik Service Manager.
+expresslrs
+betaflight
+team_blacksheep
+discord
+telegram
+viber
+whatsapp
+meta
+linkedin
+youtube
+rutracker
+rutor
+tor_project
+ntc_party
+edgetx
+hackmd
+amnezia
+lilygo
+issabel
+linphone
+silabs
+ardupilot
+esc_configurator
+oscarliang
+qgc_terrain
+ubiquiti

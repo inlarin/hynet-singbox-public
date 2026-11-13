@@ -24,6 +24,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify generated RouterOS service rules
+        run: |
+          python -m py_compile scripts/generate_routeros_services.py scripts/mikrotik_service_manager.py
+          python scripts/generate_routeros_services.py generate --output /tmp/routeros-services.rsc
+          cmp scripts/routeros-services.rsc /tmp/routeros-services.rsc
+
       - uses: docker/setup-qemu-action@v3
         with:
           platforms: arm,arm64
