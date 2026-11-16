@@ -8,6 +8,7 @@
 /.local/
 /__pycache__/
 /scripts/__pycache__/
+__pycache__/
 
 # Local MikroTik documentation snapshots — third-party content,
 # kept locally for offline verification of RouterOS commands.
